@@ -4,15 +4,25 @@ public class UploadFilesResult {
 	private int uploadedFiles;
 	private int invalidFiles;
 	private int fobiddenFiles;
+	private int existFiles;
 
 	public UploadFilesResult() {
 		this.uploadedFiles = 0;
 		this.invalidFiles = 0;
 		this.fobiddenFiles = 0;
+		this.existFiles = 0;
+	}
+
+	public int getExistFiles() {
+		return this.existFiles;
+	}
+
+	public void increaseExistFiles() {
+		this.existFiles++;
 	}
 
 	public int getUploadedFiles() {
-		return uploadedFiles;
+		return this.uploadedFiles;
 	}
 
 	public void increaseUploadedFiles() {
@@ -20,7 +30,7 @@ public class UploadFilesResult {
 	}
 
 	public int getInvalidFiles() {
-		return invalidFiles;
+		return this.invalidFiles;
 	}
 
 	public void increaseInvalidFiles() {
@@ -28,7 +38,7 @@ public class UploadFilesResult {
 	}
 
 	public int getFobiddenFiles() {
-		return fobiddenFiles;
+		return this.fobiddenFiles;
 	}
 
 	public void increaseFobiddenFiles() {

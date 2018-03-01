@@ -1,40 +1,52 @@
 package com.leo.prj.service;
 
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.common.net.MediaType;
 import com.leo.prj.bean.UploadFilesResult;
+import com.leo.prj.constant.FileResourcePath;
+import com.leo.prj.enumeration.UploadFileStatus;
+import com.leo.prj.util.FileChecker;
 
 @Service
 public class UploadService {
+	@Autowired
 	private UploadFilesResult uploadFilesResult;
-	private Tika tika;
 
 	@Autowired
-	public void setUploadFilesResult(UploadFilesResult uploadFilesResult) {
-		this.uploadFilesResult = uploadFilesResult;
-	}
+	private FilePathService filePathService;
 
 	@Autowired
-	public void setTika(Tika tika) {
-		this.tika = tika;
-	}
+	private FileChecker imageChecker;
 
-	public UploadFilesResult uploadFile(MultipartFile uploadFile) throws Exception {
+	public UploadFilesResult uploadFile(final MultipartFile uploadFile) throws Exception {
 		final UploadFilesResult uploadFilesResult = this.uploadFilesResult;
-		final MediaType mediaType = MediaType.parse(this.tika.detect(uploadFile.getBytes()));
-		if(mediaType.is(MediaType.APPLE_MOBILE_CONFIG)) {
+		UploadFileStatus uploadFileStatus = this.imageChecker.checkUploadFile(uploadFile,
+				FileResourcePath.createUploadPath().getPath().toString());
+		switch (uploadFileStatus) {
+		case EXIST:
+			uploadFilesResult.increaseExistFiles();
+			break;
+		case INVALID:
+			uploadFilesResult.increaseInvalidFiles();
+			break;
+		case FORBIDDEN:
+			uploadFilesResult.increaseFobiddenFiles();
+			break;
+		default:
+			Files.write(Paths.get(this.filePathService.getFilePath()), uploadFile.getBytes());
+			uploadFilesResult.increaseUploadedFiles();
+			break;
 		}
 		return uploadFilesResult;
 	}
 
-	public UploadFilesResult uploadFiles(List<MultipartFile> uploadFiles) {
+	public UploadFilesResult uploadFiles(final List<MultipartFile> uploadFiles) {
 		final UploadFilesResult uploadFilesResult = this.uploadFilesResult;
 		return uploadFilesResult;
 	}
