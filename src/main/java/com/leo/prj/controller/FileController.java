@@ -1,6 +1,7 @@
 package com.leo.prj.controller;
 
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +13,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.leo.prj.bean.UploadFilesResult;
 import com.leo.prj.service.UploadService;
+import com.leo.prj.util.FileResourcePath;
 
 @RestController
 public class FileController {
 	@Autowired
 	private UploadService uploadService;
-	
-	@PostMapping("/uploadFiles")
-	public ResponseEntity<UploadFilesResult> uploadFiles(@RequestParam("files")List<MultipartFile> uploadFiles){
-		return ResponseEntity.ok(uploadService.uploadFiles(uploadFiles));
+
+	@PostMapping("/uploadImages")
+	public ResponseEntity<UploadFilesResult> uploadFiles(@RequestParam("files")List<MultipartFile> uploadFiles, @RequestParam("user")String user){
+		final File file = Paths.get(FileResourcePath.createUploadImagePath(user).getPath().toUri()).toFile();
+		if(!file.exists()) {
+			file.mkdirs();
+		}
+		return ResponseEntity.ok(this.uploadService.uploadFiles(uploadFiles, user));
 	}
-	
-	@PostMapping("/uploadFile")
-	public ResponseEntity<UploadFilesResult> uploadFiles(@RequestParam("file")MultipartFile uploadFile) throws Exception{
-		return ResponseEntity.ok(uploadService.uploadFile(uploadFile));
-	}
+
 }
