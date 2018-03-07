@@ -36,9 +36,10 @@ public class UploadService {
 			break;
 		default:
 			try {
-				Files.write(FileResourcePath.createUploadPath().addPath(filePath)
+				Files.write(FileResourcePath.createUploadImagePath(filePath)
 						.addPath(uploadFile.getOriginalFilename()).getPath(), uploadFile.getBytes());
 			} catch (final Exception e) {
+				e.printStackTrace();
 				throw new RuntimeException(e.getMessage());
 			}
 			uploadFilesResult.increaseUploadedFiles();
@@ -47,7 +48,7 @@ public class UploadService {
 		return uploadFileStatus;
 	}
 
-	public UploadFilesResult uploadFiles(final List<MultipartFile> uploadFiles, final String filePath) {
+	public UploadFilesResult uploadImages(final List<MultipartFile> uploadFiles, final String filePath) {
 		final UploadFilesResult uploadFilesResult = this.uploadFilesResult;
 		for (final MultipartFile uploadFile : uploadFiles) {
 			final UploadFileStatus result = this.uploadFile(uploadFile, filePath);

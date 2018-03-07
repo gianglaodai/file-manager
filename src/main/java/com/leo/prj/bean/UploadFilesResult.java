@@ -1,16 +1,21 @@
 package com.leo.prj.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UploadFilesResult {
 	private int uploadedFiles;
 	private int invalidFiles;
 	private int fobiddenFiles;
 	private int existFiles;
+	private final List<FileInfo> files;
 
 	public UploadFilesResult() {
 		this.uploadedFiles = 0;
 		this.invalidFiles = 0;
 		this.fobiddenFiles = 0;
 		this.existFiles = 0;
+		this.files = new ArrayList();
 	}
 
 	public int getExistFiles() {

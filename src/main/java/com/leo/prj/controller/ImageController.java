@@ -12,23 +12,37 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.leo.prj.bean.FileInfo;
 import com.leo.prj.bean.UploadFilesResult;
+import com.leo.prj.service.FileService;
 import com.leo.prj.service.UploadService;
 import com.leo.prj.util.FileResourcePath;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-public class FileController {
+public class ImageController {
 	@Autowired
 	private UploadService uploadService;
 
-	@RequestMapping(value = "/uploadImages")
-	public ResponseEntity<UploadFilesResult> uploadFiles(@RequestParam("file") final List<MultipartFile> files) {
-		final File file = Paths.get(FileResourcePath.createUploadImagePath("giang").getPath().toUri()).toFile();
+	@Autowired
+	private FileService fileService;
+
+	@RequestMapping("/uploadImages")
+	public ResponseEntity<UploadFilesResult> uploadImages(@RequestParam("file") final List<MultipartFile> files, @RequestParam final String user) {
+		this.checkAndCreateDirectory(user);
+		return ResponseEntity.ok(this.uploadService.uploadImages(files, user));
+	}
+
+	@RequestMapping("/getImages")
+	public ResponseEntity<List<FileInfo>> getImages(@RequestParam String user){
+		this.checkAndCreateDirectory(user);
+		return ResponseEntity.ok(this.fileService.getImages(user));
+	}
+
+	private void checkAndCreateDirectory(String user) {
+		final File file = Paths.get(FileResourcePath.createUploadImagePath(user).getPath().toUri()).toFile();
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-		return ResponseEntity.ok(this.uploadService.uploadFiles(files, "giang"));
 	}
-
 }
