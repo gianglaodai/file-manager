@@ -26,14 +26,14 @@ public abstract class FileChecker {
 		if (file == null) {
 			return UploadFileStatus.INVALID;
 		}
-		Path filePath = Paths.get(directory + File.separator + file.getOriginalFilename());
+		final Path filePath = Paths.get(directory + File.separator + file.getOriginalFilename());
 		if (Files.exists(filePath)) {
 			return UploadFileStatus.EXIST;
 		}
 		String mimeType = CommonConstant.EMPTY;
 		try {
 			mimeType = this.tika.detect(file.getBytes());
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			FileChecker.logger.error(e.getMessage());
 			return UploadFileStatus.INVALID;
 		}
@@ -46,8 +46,8 @@ public abstract class FileChecker {
 	}
 
 	private boolean isForbidden(final String mimeType) {
-		MediaType mediaType = MediaType.parse(mimeType);
-		for (MimeType acceptType : this.acceptTypes()) {
+		final MediaType mediaType = MediaType.parse(mimeType);
+		for (final MimeType acceptType : this.acceptTypes()) {
 			if (acceptType == mediaType.getType()) {
 				return false;
 			}
