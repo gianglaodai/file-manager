@@ -20,10 +20,10 @@ public class UploadService {
 	@Autowired
 	private FileChecker imageChecker;
 
-	private UploadFileStatus uploadFile(final MultipartFile uploadFile, String filePath) {
+	private UploadFileStatus uploadFile(final MultipartFile uploadFile, final String filePath) {
 		final UploadFilesResult uploadFilesResult = this.uploadFilesResult;
 		final UploadFileStatus uploadFileStatus = this.imageChecker.checkUploadFile(uploadFile,
-				FileResourcePath.createUploadPath().getPath().toString());
+				FileResourcePath.createUploadImagePath(filePath).getPath().toString());
 		switch (uploadFileStatus) {
 		case EXIST:
 			uploadFilesResult.increaseExistFiles();
@@ -36,7 +36,8 @@ public class UploadService {
 			break;
 		default:
 			try {
-				Files.write(FileResourcePath.createUploadPath().addPath(filePath).addPath(uploadFile.getOriginalFilename()).getPath(), uploadFile.getBytes());
+				Files.write(FileResourcePath.createUploadPath().addPath(filePath)
+						.addPath(uploadFile.getOriginalFilename()).getPath(), uploadFile.getBytes());
 			} catch (final Exception e) {
 				throw new RuntimeException(e.getMessage());
 			}
@@ -46,7 +47,7 @@ public class UploadService {
 		return uploadFileStatus;
 	}
 
-	public UploadFilesResult uploadFiles(final List<MultipartFile> uploadFiles, String filePath) {
+	public UploadFilesResult uploadFiles(final List<MultipartFile> uploadFiles, final String filePath) {
 		final UploadFilesResult uploadFilesResult = this.uploadFilesResult;
 		for (final MultipartFile uploadFile : uploadFiles) {
 			final UploadFileStatus result = this.uploadFile(uploadFile, filePath);

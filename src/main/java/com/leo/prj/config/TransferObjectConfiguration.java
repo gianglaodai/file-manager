@@ -14,4 +14,5 @@ public class TransferObjectConfiguration {
 	public UploadFilesResult uploadFilesResult() {
 		return new UploadFilesResult();
 	}
+
 }
