@@ -25,7 +25,7 @@ public class ImageController {
 	private UploadService uploadService;
 
 	@Autowired
-	private FileService fileService;
+	private FileService imageService;
 
 	@RequestMapping("/uploadImages")
 	public ResponseEntity<UploadFilesResult> uploadImages(@RequestParam("file") final List<MultipartFile> files, @RequestParam final String user) {
@@ -34,9 +34,9 @@ public class ImageController {
 	}
 
 	@RequestMapping("/getImages")
-	public ResponseEntity<List<FileInfo>> getImages(@RequestParam String user){
+	public ResponseEntity<List<? extends FileInfo>> getImages(@RequestParam String user){
 		this.checkAndCreateDirectory(user);
-		return ResponseEntity.ok(this.fileService.getImages(user));
+		return ResponseEntity.ok(this.imageService.getFiles(user));
 	}
 
 	private void checkAndCreateDirectory(String user) {

@@ -1,14 +1,33 @@
 package com.leo.prj.bean;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
-import java.util.Optional;
+
+import org.apache.log4j.Logger;
 
 public class FileInfo {
 	private String fileName;
 	private String fileType;
-	private String tooltip;
 	private Date createdDate;
-	private Optional<String> url;
+	private String url;
+
+	private static final Logger logger = Logger.getLogger(FileInfo.class);
+
+	public FileInfo(File file) {
+		this.fileName = file.getName();
+		try {
+			this.fileType = Files.probeContentType(file.toPath());
+			final BasicFileAttributes readAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+			this.createdDate = new Date(readAttributes.creationTime().toMillis());
+		}catch(final Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		}
+		this.url = file.toPath().toString();
+
+	}
 
 	public String getFileName() {
 		return this.fileName;
@@ -26,14 +45,6 @@ public class FileInfo {
 		this.fileType = fileType;
 	}
 
-	public String getTooltip() {
-		return this.tooltip;
-	}
-
-	public void setTooltip(String tooltip) {
-		this.tooltip = tooltip;
-	}
-
 	public Date getCreatedDate() {
 		return this.createdDate;
 	}
@@ -42,11 +53,12 @@ public class FileInfo {
 		this.createdDate = createdDate;
 	}
 
-	public Optional<String> getUrl() {
+	public String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(Optional<String> url) {
+	public void setUrl(String url) {
 		this.url = url;
 	}
+
 }

@@ -11,9 +11,9 @@ import com.leo.prj.util.FileResourcePath;
 
 @RestController
 public class ResourceController {
-	@GetMapping("/resources/img/{user}/{file:.+}")
+	@GetMapping("/img/{user}/{file:.+}")
 	public ResponseEntity<Resource> serveImage(@PathVariable("user")String user, @PathVariable String file) throws Exception{
-		final Resource image = new UrlResource(FileResourcePath.createUploadPath().addPath(user).addPath(file).getPath().toUri());
+		final Resource image = new UrlResource(FileResourcePath.createUploadImagePath(user).addPath(file).getPath().toUri());
 		return ResponseEntity.ok(image);
 	}
 }
