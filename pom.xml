@@ -55,6 +55,12 @@
 
 	<build>
 		<finalName>file-manager</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<targetPath>${project.build.directory}</targetPath>
+			</resource>
+		</resources>
 		<plugins>
 
 			<!-- download source code in Eclipse, best practice -->
@@ -82,10 +88,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>**/log4j.properties</exclude>
-						<exclude>**/application.properties</exclude>
-					</excludes>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
