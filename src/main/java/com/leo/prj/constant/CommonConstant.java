@@ -8,6 +8,7 @@ public interface CommonConstant {
 
 	public static interface URLConstant {
 		public static final String RESOUCE_PATH_IMG = "img";
+		public static final String ACCEPT_ORIGIN = "http://localhost:8080";
 	}
 
 }

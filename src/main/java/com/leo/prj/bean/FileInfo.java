@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 public class FileInfo {
@@ -16,12 +17,12 @@ public class FileInfo {
 	private static final Logger logger = Logger.getLogger(FileInfo.class);
 
 	public FileInfo(File file) {
-		this.fileName = file.getName();
+		this.fileName = FilenameUtils.removeExtension(file.getName());
 		try {
 			this.fileType = Files.probeContentType(file.toPath());
 			final BasicFileAttributes readAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
 			this.createdDate = new Date(readAttributes.creationTime().toMillis());
-		}catch(final Exception e) {
+		} catch (final Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
 		}

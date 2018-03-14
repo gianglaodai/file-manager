@@ -16,7 +16,7 @@ import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.util.FileResourcePath;
 
 @Service
-public class ImageService extends FileService {
+public class ImageService extends AbstractFileService implements FileService {
 	@Autowired
 	private ConfigurationProperties configurationProperties;
 
@@ -29,18 +29,13 @@ public class ImageService extends FileService {
 			imageDirectory.mkdirs();
 			return imageInfos;
 		}
-		return Stream
-				.of(imageDirectory.listFiles(file -> file.isFile() && !FilenameUtils
-						.getExtension(FilenameUtils.removeExtension(file.getName())).equals(CommonConstant.THUMBNAIL)))
-				.parallel().map(file -> this.toImageInfo(user, file)).collect(Collectors.toList());
+		return Stream.of(imageDirectory.listFiles(file -> file.isFile() && !this.isThumbnail(file)))
+				.map(file -> this.toImageInfo(user, file)).collect(Collectors.toList());
 	}
 
-	private final String createFilePath(String user, String fileName) {
-		final StringBuilder filePath = new StringBuilder(this.configurationProperties.getIpAddress());
-		filePath.append(CommonConstant.REQUEST_PATH_SEPARATOR).append(CommonConstant.URLConstant.RESOUCE_PATH_IMG)
-				.append(CommonConstant.REQUEST_PATH_SEPARATOR).append(user)
-				.append(CommonConstant.REQUEST_PATH_SEPARATOR).append(fileName);
-		return filePath.toString();
+	private boolean isThumbnail(File file) {
+		return FilenameUtils.getExtension(FilenameUtils.removeExtension(file.getName()))
+				.equals(CommonConstant.THUMBNAIL);
 	}
 
 	private final String createImageThumnailPath(String user, String fileName) {
@@ -58,5 +53,25 @@ public class ImageService extends FileService {
 		imageInfo.setUrl(this.createFilePath(user, fileName));
 		imageInfo.setThumbnail(this.createImageThumnailPath(user, fileName));
 		return imageInfo;
+	}
+
+	@Override
+	public boolean deleteFile(String fileName, String user) {
+		final String imagePath = this.createFilePath(user, fileName);
+		final File image = new File(imagePath);
+		final String thumbnailPath = this.createImageThumnailPath(user, fileName);
+		final File thumbnail = new File(thumbnailPath);
+		try {
+			image.deleteOnExit();
+			thumbnail.deleteOnExit();
+			return true;
+		} catch (final Exception e) {
+			return false;
+		}
+	}
+
+	@Override
+	protected String getResourcePath() {
+		return CommonConstant.URLConstant.RESOUCE_PATH_IMG;
 	}
 }

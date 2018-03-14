@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.leo.prj.bean.FileInfo;
 
-public abstract class FileService {
-	public abstract List<? extends FileInfo> getFiles(String user);
+public interface FileService {
+
+	public List<? extends FileInfo> getFiles(String user);
+
+	public boolean deleteFile(String fileName, String user);
 }

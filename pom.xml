@@ -59,6 +59,9 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<targetPath>${project.build.directory}</targetPath>
+				<includes>
+					<include>application.properties</include>
+				</includes>
 			</resource>
 		</resources>
 		<plugins>
@@ -88,6 +91,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
+					<excludes>
+						<exclude>**/application.properties</exclude>
+						<exclude>**/log4j.properties</exclude>
+					</excludes>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
