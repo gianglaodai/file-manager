@@ -1,6 +1,7 @@
 package com.leo.prj.service;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,13 +58,17 @@ public class ImageService extends AbstractFileService implements FileService {
 
 	@Override
 	public boolean deleteFile(String fileName, String user) {
-		final String imagePath = this.createFilePath(user, fileName);
-		final File image = new File(imagePath);
-		final String thumbnailPath = this.createImageThumnailPath(user, fileName);
-		final File thumbnail = new File(thumbnailPath);
+		final Path imagePath = this.getFileResourcePath(user, fileName);
+		final File image = new File(imagePath.toUri());
+		final Path thumbnailPath = this.getFileResourcePath(user, this.getImageThumnailName(image.getName()));
+		final File thumbnail = new File(thumbnailPath.toUri());
 		try {
-			image.deleteOnExit();
-			thumbnail.deleteOnExit();
+			if (image.exists()) {
+				image.delete();
+			}
+			if (thumbnail.exists()) {
+				thumbnail.delete();
+			}
 			return true;
 		} catch (final Exception e) {
 			return false;
@@ -73,5 +78,10 @@ public class ImageService extends AbstractFileService implements FileService {
 	@Override
 	protected String getResourcePath() {
 		return CommonConstant.URLConstant.RESOUCE_PATH_IMG;
+	}
+
+	@Override
+	protected FileResourcePath getBasicFileResourcePath(String user) {
+		return FileResourcePath.createUploadImagePath(user);
 	}
 }

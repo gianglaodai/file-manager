@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 public class FileInfo {
 	private String fileName;
+	private String fileFullName;
 	private String fileType;
 	private Date createdDate;
 	private String url;
@@ -18,6 +19,7 @@ public class FileInfo {
 
 	public FileInfo(File file) {
 		this.fileName = FilenameUtils.removeExtension(file.getName());
+		this.fileFullName = file.getName();
 		try {
 			this.fileType = Files.probeContentType(file.toPath());
 			final BasicFileAttributes readAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
@@ -28,6 +30,14 @@ public class FileInfo {
 		}
 		this.url = file.toPath().toString();
 
+	}
+
+	public String getFileFullName() {
+		return this.fileFullName;
+	}
+
+	public void setFileFullName(String fileFullName) {
+		this.fileFullName = fileFullName;
 	}
 
 	public String getFileName() {
