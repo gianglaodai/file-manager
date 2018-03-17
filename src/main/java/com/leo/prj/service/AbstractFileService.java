@@ -13,9 +13,8 @@ public abstract class AbstractFileService {
 	private ConfigurationProperties configurationProperties;
 
 	protected final String createFilePath(String user, String fileName) {
-		final StringBuilder filePath = new StringBuilder(this.configurationProperties.getIpAddress());
-		filePath.append(CommonConstant.REQUEST_PATH_SEPARATOR).append(this.getResourcePath())
-				.append(CommonConstant.REQUEST_PATH_SEPARATOR).append(user)
+		final StringBuilder filePath = new StringBuilder();
+		filePath.append(this.getResourcePath()).append(CommonConstant.REQUEST_PATH_SEPARATOR).append(user)
 				.append(CommonConstant.REQUEST_PATH_SEPARATOR).append(fileName);
 		return filePath.toString();
 	}
