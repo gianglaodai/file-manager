@@ -8,5 +8,5 @@ public interface FileService {
 
 	public List<? extends FileInfo> getFiles(String user);
 
-	public boolean deleteFile(String fileName, String user);
+	public int deleteFiles(List<String> fileName, String user);
 }

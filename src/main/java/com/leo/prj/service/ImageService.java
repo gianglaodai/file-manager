@@ -57,6 +57,16 @@ public class ImageService extends AbstractFileService implements FileService {
 	}
 
 	@Override
+	public int deleteFiles(List<String> fileNames, String user) {
+		int deletedFile = 0;
+		for (final String fileName : fileNames) {
+			if (this.deleteFile(fileName, user)) {
+				deletedFile++;
+			}
+		}
+		return deletedFile;
+	}
+
 	public boolean deleteFile(String fileName, String user) {
 		final Path imagePath = this.getFileResourcePath(user, fileName);
 		final File image = new File(imagePath.toUri());

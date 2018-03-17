@@ -12,12 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.leo.prj.bean.FileInfo;
 import com.leo.prj.bean.UploadFilesResult;
-import com.leo.prj.constant.CommonConstant.URLConstant;
 import com.leo.prj.service.FileService;
 import com.leo.prj.service.UploadService;
 import com.leo.prj.util.FileResourcePath;
 
-@CrossOrigin(origins = URLConstant.ACCEPT_ORIGIN)
+@CrossOrigin
 @RestController
 public class ImageController {
 	@Autowired
@@ -49,9 +48,9 @@ public class ImageController {
 		return true;
 	}
 
-	@DeleteMapping("/image")
-	public ResponseEntity<Boolean> deleteImage(@RequestParam String fileName, @RequestParam String user) {
+	@DeleteMapping("/images")
+	public ResponseEntity<Integer> deleteImage(@RequestParam List<String> fileNames, @RequestParam String user) {
 		final boolean hasDirectory = this.checkAndCreateDirectory(user);
-		return hasDirectory ? ResponseEntity.ok(this.imageService.deleteFile(fileName, user)) : ResponseEntity.ok(true);
+		return hasDirectory ? ResponseEntity.ok(this.imageService.deleteFiles(fileNames, user)) : ResponseEntity.ok(0);
 	}
 }

@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.leo.prj.constant.CommonConstant;
-import com.leo.prj.constant.CommonConstant.URLConstant;
 import com.leo.prj.util.FileResourcePath;
 
-@CrossOrigin(origins = URLConstant.ACCEPT_ORIGIN)
+@CrossOrigin
 @RestController
 public class ResourceController {
 	@GetMapping("/" + CommonConstant.URLConstant.RESOUCE_PATH_IMG + "/{user}/{file:.+}")

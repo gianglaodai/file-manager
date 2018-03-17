@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,12 +13,9 @@ import com.leo.prj.enumeration.UploadFileStatus;
 import com.leo.prj.util.FileResourcePath;
 
 @Service
-public abstract  class UploadService {
-	@Autowired
-	private UploadFilesResult uploadFilesResult;
-
+public abstract class UploadService {
 	private UploadFileStatus uploadFile(final MultipartFile uploadFile, final String filePath) {
-		final UploadFilesResult uploadFilesResult = this.uploadFilesResult;
+		final UploadFilesResult uploadFilesResult = new UploadFilesResult();
 		final UploadFileStatus uploadFileStatus = this.checkUploadFile(uploadFile,
 				FileResourcePath.createUploadImagePath(filePath).getPath().toString());
 		switch (uploadFileStatus) {
@@ -47,11 +43,13 @@ public abstract  class UploadService {
 		return uploadFileStatus;
 	}
 
-	public abstract UploadFileStatus checkUploadFile(MultipartFile uploadFile,String filePath);
-	public void afterUploadFile(File file) {};
+	public abstract UploadFileStatus checkUploadFile(MultipartFile uploadFile, String filePath);
+
+	public void afterUploadFile(File file) {
+	};
 
 	public UploadFilesResult uploadImages(final List<MultipartFile> uploadFiles, final String filePath) {
-		final UploadFilesResult uploadFilesResult = this.uploadFilesResult;
+		final UploadFilesResult uploadFilesResult = new UploadFilesResult();
 		for (final MultipartFile uploadFile : uploadFiles) {
 			final UploadFileStatus result = this.uploadFile(uploadFile, filePath);
 			switch (result) {

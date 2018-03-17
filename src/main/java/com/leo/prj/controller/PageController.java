@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.leo.prj.constant.CommonConstant.URLConstant;
-
-@CrossOrigin(origins = URLConstant.ACCEPT_ORIGIN)
+@CrossOrigin
 @RestController
 public class PageController {
 	@RequestMapping("/savePage")
