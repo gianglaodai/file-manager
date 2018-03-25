@@ -10,5 +10,4 @@ public class UtilConfiguration {
 	public Tika tika() {
 		return new Tika();
 	}
-
 }

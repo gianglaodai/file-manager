@@ -1,9 +1,13 @@
 package com.leo.prj.service;
 
+import java.nio.file.Path;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.leo.prj.util.FilePathUtil;
 
 @Service
 public class UserService {
@@ -12,5 +16,9 @@ public class UserService {
 
 	public String getCurrentUser() {
 		return this.request.getParameter("user");
+	}
+
+	public Path getCurrentUserDirectory() {
+		return FilePathUtil.createUploadUserPath().add(this.getCurrentUser()).getPath();
 	}
 }

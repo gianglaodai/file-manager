@@ -1,8 +1,7 @@
-package com.leo.prj.util;
+package com.leo.prj.service;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -14,35 +13,37 @@ import org.springframework.web.multipart.MultipartFile;
 import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.enumeration.MediaType;
 import com.leo.prj.enumeration.MimeType;
-import com.leo.prj.enumeration.UploadFileStatus;
 
-public abstract class FileChecker {
+public abstract class FileCheckerService {
 	@Autowired
 	private Tika tika;
 
-	private static final Logger logger = Logger.getLogger(FileChecker.class);
+	private static final Logger logger = Logger.getLogger(FileCheckerService.class);
 
-	public UploadFileStatus checkUploadFile(final MultipartFile file, final String directory) {
-		if (file == null) {
-			return UploadFileStatus.INVALID;
+	public boolean isExist(String directory, String fileName) {
+		return Files.exists(Paths.get(directory + File.pathSeparator));
+	}
+
+	public boolean isValid(final MultipartFile file, final String directory, String fileName) {
+		if ((file == null) || !Files.isDirectory(Paths.get(directory))) {
+			return false;
 		}
-		final Path filePath = Paths.get(directory + File.separator + file.getOriginalFilename());
-		if (Files.exists(filePath)) {
-			return UploadFileStatus.EXIST;
+		if (Files.exists(Paths.get(directory + File.separator + fileName))) {
+			return false;
 		}
 		String mimeType = CommonConstant.EMPTY;
 		try {
 			mimeType = this.tika.detect(file.getBytes());
 		} catch (final Exception e) {
-			FileChecker.logger.error(e.getMessage());
-			return UploadFileStatus.INVALID;
+			FileCheckerService.logger.error(e.getMessage());
+			return false;
 		}
 
 		if (!mimeType.equals(file.getContentType())) {
-			return UploadFileStatus.INVALID;
+			return false;
 		}
 
-		return this.isForbidden(mimeType) ? UploadFileStatus.FORBIDDEN : UploadFileStatus.VALID;
+		return !this.isForbidden(mimeType);
 	}
 
 	private boolean isForbidden(final String mimeType) {

@@ -1,18 +1,21 @@
-package com.leo.prj.util;
+package com.leo.prj.service.img;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.leo.prj.enumeration.MimeType;
+import com.leo.prj.service.FileCheckerService;
 
-@Component
-public class ImageChecker extends FileChecker {
+@Service
+public class ImageCheckerService extends FileCheckerService {
+
 	@Override
 	protected List<MimeType> acceptTypes() {
 		final List<MimeType> acceptTypes = new ArrayList<>();
 		acceptTypes.add(MimeType.IMAGE);
 		return acceptTypes;
 	}
+
 }
