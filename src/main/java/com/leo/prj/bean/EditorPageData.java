@@ -1,9 +1,17 @@
 package com.leo.prj.bean;
 
+import com.leo.prj.constant.CommonConstant;
+
 public class EditorPageData {
 	private String pageName;
 	private String jsonContent;
 	private String htmlContent;
+
+	public EditorPageData() {
+		this.pageName = CommonConstant.EMPTY;
+		this.jsonContent = CommonConstant.EMPTY;
+		this.htmlContent = CommonConstant.EMPTY;
+	}
 
 	public String getPageName() {
 		return this.pageName;

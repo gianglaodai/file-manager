@@ -24,7 +24,7 @@ public class ImageController {
 	private FileService imageService;
 
 	@Autowired
-	private FileInfoService<ImageInfo> imageInforService;
+	private FileInfoService<ImageInfo> imageInfoService;
 
 	@PostMapping("/images")
 	public ResponseEntity<UploadFilesResult> uploadImages(@RequestParam("file") final List<MultipartFile> files) {
@@ -33,7 +33,7 @@ public class ImageController {
 
 	@GetMapping("/images")
 	public ResponseEntity<List<ImageInfo>> getImages() {
-		return ResponseEntity.ok(this.imageInforService.getFileInfos());
+		return ResponseEntity.ok(this.imageInfoService.getFileInfos());
 	}
 
 	@DeleteMapping("/images")

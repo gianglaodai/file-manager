@@ -8,6 +8,8 @@ import java.util.Date;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import com.leo.prj.constant.CommonConstant;
+
 public class FileInfo {
 	private String fileName;
 	private String fileFullName;
@@ -28,8 +30,7 @@ public class FileInfo {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
-		this.url = file.toPath().toString();
-
+		this.url = CommonConstant.EMPTY;
 	}
 
 	public String getFileFullName() {
