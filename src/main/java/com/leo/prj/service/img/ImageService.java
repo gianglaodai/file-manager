@@ -51,7 +51,7 @@ public class ImageService implements FileService {
 				.equals(CommonConstant.THUMBNAIL);
 	}
 
-	public final String getImageThumnailName(String fileName) {
+	public final String getThumbnailName(String fileName) {
 		return FilenameUtils.removeExtension(fileName) + CommonConstant.DOT + CommonConstant.THUMBNAIL
 				+ CommonConstant.DOT + FilenameUtils.getExtension(fileName);
 	}
@@ -71,7 +71,7 @@ public class ImageService implements FileService {
 		try {
 			Files.move(this.createFileUploadPath(fileName), this.createFileDeletePath(fileName),
 					StandardCopyOption.REPLACE_EXISTING);
-			final String thumbnailName = this.getImageThumnailName(fileName);
+			final String thumbnailName = this.getThumbnailName(fileName);
 			Files.move(this.createFileUploadPath(thumbnailName), this.createFileDeletePath(thumbnailName),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (final Exception e) {

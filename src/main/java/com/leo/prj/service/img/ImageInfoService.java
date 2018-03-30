@@ -8,13 +8,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.leo.prj.bean.ImageInfo;
+import com.leo.prj.bean.FileInfo;
 import com.leo.prj.controller.ResourceController;
 import com.leo.prj.service.FileInfoService;
 import com.leo.prj.service.UserService;
 
 @Service
-public class ImageInfoService implements FileInfoService<ImageInfo> {
+public class ImageInfoService implements FileInfoService<FileInfo> {
 
 	@Autowired
 	private ImageService imageService;
@@ -23,13 +23,13 @@ public class ImageInfoService implements FileInfoService<ImageInfo> {
 	private UserService userService;
 
 	@Override
-	public List<ImageInfo> getFileInfos() {
+	public List<FileInfo> getFileInfos() {
 		return this.imageService.getFiles().stream().map(file -> this.toFileInfo(file)).collect(Collectors.toList());
 	}
 
 	@Override
-	public ImageInfo toFileInfo(File file) {
-		final ImageInfo imageInfo = new ImageInfo(file);
+	public FileInfo toFileInfo(File file) {
+		final FileInfo imageInfo = new FileInfo(file);
 		final String fileName = file.getName();
 		imageInfo.setFileName(FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileName)));
 		imageInfo.setUrl(this.createUrl(fileName));
@@ -44,7 +44,7 @@ public class ImageInfoService implements FileInfoService<ImageInfo> {
 	}
 
 	private String createThumbnailUrl(String fileName) {
-		final String thumbnailName = this.imageService.getImageThumnailName(fileName);
+		final String thumbnailName = this.imageService.getThumbnailName(fileName);
 		return this.createUrl(thumbnailName);
 	}
 }

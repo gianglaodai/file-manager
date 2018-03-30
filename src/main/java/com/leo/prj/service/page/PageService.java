@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,11 +24,12 @@ import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
 import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.service.UserService;
+import com.leo.prj.util.FileFilterUtil;
 import com.leo.prj.util.FilePathUtil;
 
 @Service
 public class PageService {
-	private static final String LANDINGPAGE_EXTENSION = "ldp";
+	public static final String LANDINGPAGE_EXTENSION = "ldp";
 
 	private static final String PAGE_DIRECTORY = "page";
 
@@ -53,10 +53,8 @@ public class PageService {
 	public List<FileInfo> getPages() {
 		final Path saveDirectory = this.getSaveDirectory();
 		final File directory = saveDirectory.toFile();
-		return Stream
-				.of(directory
-						.listFiles(file -> FilenameUtils.getExtension(file.getName()).equals(LANDINGPAGE_EXTENSION)))
-				.map(file -> new FileInfo(file)).collect(Collectors.toList());
+		return Stream.of(directory.listFiles(FileFilterUtil.IS_LANDING_PAGE)).map(file -> new FileInfo(file))
+				.collect(Collectors.toList());
 	}
 
 	private Path getSaveDirectory() {

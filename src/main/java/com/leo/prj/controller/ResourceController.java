@@ -16,6 +16,8 @@ import com.leo.prj.service.img.ImageResourceService;
 public class ResourceController {
 	public static final String IMAGE_URL = "/img/{user}/{fileName:.+}";
 
+	public static final String TEMPLATE_THUMBNAIL = "/template/thumbnail/{fileName:.+}";
+
 	@Autowired
 	private ImageResourceService imageResourceService;
 
@@ -23,6 +25,12 @@ public class ResourceController {
 	public ResponseEntity<Resource> getImageResource(@PathVariable("user") String user, @PathVariable String fileName)
 			throws Exception {
 		final Resource image = new UrlResource(this.imageResourceService.getImageUri(user, fileName));
+		return ResponseEntity.ok(image);
+	}
+
+	@GetMapping(TEMPLATE_THUMBNAIL)
+	public ResponseEntity<Resource> getTemplateThumbnailResource(@PathVariable String fileName) throws Exception {
+		final Resource image = new UrlResource(this.imageResourceService.getTemplateThumbnailResource(fileName));
 		return ResponseEntity.ok(image);
 	}
 }

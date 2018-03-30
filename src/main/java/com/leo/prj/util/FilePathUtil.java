@@ -8,6 +8,7 @@ public class FilePathUtil {
 	private static final String RESOURCES = "resources";
 	private static final String USERS = "users";
 	public static final String RECYCLE = "recycle";
+	public static final String SHARE = "share";
 	private final String filePath;
 
 	private FilePathUtil() {
@@ -28,6 +29,10 @@ public class FilePathUtil {
 
 	public static FilePathUtil createUploadPath() {
 		return new FilePathUtil();
+	}
+
+	public static FilePathUtil createSharePath() {
+		return createUploadPath().add(SHARE);
 	}
 
 	public static FilePathUtil createUploadUserPath() {

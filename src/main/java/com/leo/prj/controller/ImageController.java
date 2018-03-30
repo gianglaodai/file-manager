@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.leo.prj.bean.ImageInfo;
+import com.leo.prj.bean.FileInfo;
 import com.leo.prj.bean.UploadFilesResult;
 import com.leo.prj.service.FileInfoService;
 import com.leo.prj.service.FileService;
@@ -24,7 +24,7 @@ public class ImageController {
 	private FileService imageService;
 
 	@Autowired
-	private FileInfoService<ImageInfo> imageInfoService;
+	private FileInfoService<FileInfo> imageInfoService;
 
 	@PostMapping("/images")
 	public ResponseEntity<UploadFilesResult> uploadImages(@RequestParam("file") final List<MultipartFile> files) {
@@ -32,7 +32,7 @@ public class ImageController {
 	}
 
 	@GetMapping("/images")
-	public ResponseEntity<List<ImageInfo>> getImages() {
+	public ResponseEntity<List<FileInfo>> getImages() {
 		return ResponseEntity.ok(this.imageInfoService.getFileInfos());
 	}
 

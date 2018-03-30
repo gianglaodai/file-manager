@@ -16,12 +16,15 @@ public class FileInfo {
 	private String fileType;
 	private Date createdDate;
 	private String url;
+	private String thumbnail;
 
 	private static final Logger logger = Logger.getLogger(FileInfo.class);
 
 	public FileInfo(File file) {
 		this.fileName = FilenameUtils.removeExtension(file.getName());
 		this.fileFullName = file.getName();
+		this.url = CommonConstant.EMPTY;
+		this.thumbnail = CommonConstant.EMPTY;
 		try {
 			this.fileType = Files.probeContentType(file.toPath());
 			final BasicFileAttributes readAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
@@ -30,7 +33,6 @@ public class FileInfo {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
-		this.url = CommonConstant.EMPTY;
 	}
 
 	public String getFileFullName() {
@@ -73,4 +75,11 @@ public class FileInfo {
 		this.url = url;
 	}
 
+	public String getThumbnail() {
+		return this.thumbnail;
+	}
+
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
+	}
 }
