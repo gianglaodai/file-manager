@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
 import com.leo.prj.service.page.PageService;
+import com.leo.prj.service.pagetemp.PageTemplateService;
 
 @CrossOrigin
 @RestController
 public class PageController {
 	@Autowired
 	private PageService pageService;
+
+	@Autowired
+	private PageTemplateService pageTemplateService;
 
 	@PostMapping("/savePage")
 	public ResponseEntity<Boolean> savePage(@RequestBody EditorPageData data) {
@@ -39,5 +43,15 @@ public class PageController {
 			return ResponseEntity.ok(pageData.get());
 		}
 		return ResponseEntity.notFound().build();
+	}
+
+	@PostMapping("/createPage")
+	public ResponseEntity<Boolean> createPage(@RequestParam String pageName, @RequestParam String templateName){	
+		Optional<EditorPageData> template = this.pageTemplateService.loadTemplate(templateName);
+		EditorPageData page = new EditorPageData();
+		page.setPageName(pageName);
+		template.ifPresent(data-> page.setJsonContent(data.getJsonContent()));
+		this.pageService.savePage(page);
+		return ResponseEntity.ok(true);
 	}
 }
