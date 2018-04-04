@@ -1,4 +1,4 @@
-package com.leo.prj.service.pagetemp;
+package com.leo.prj.service.section;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,16 +18,15 @@ import org.springframework.stereotype.Service;
 
 import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
-import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.controller.ResourceController;
 import com.leo.prj.service.img.ImageService;
 import com.leo.prj.util.FileFilterUtil;
 import com.leo.prj.util.FilePathUtil;
 
 @Service
-public class PageTemplateService {
-	private static final String TEMPLATE_DIRECTORY = "template";
-	private static final Logger logger = Logger.getLogger(PageTemplateService.class);
+public class SectionService {
+	private static final String SECTION_DIRECTORY = "section";
+	private static final Logger logger = Logger.getLogger(SectionService.class);
 
 	@Autowired
 	private ImageService imageService;
@@ -37,8 +36,8 @@ public class PageTemplateService {
 				.map(file -> this.toFileInfo(file)).collect(Collectors.toList());
 	}
 
-	public Optional<EditorPageData> loadTemplate(String templateName){
-		Path templatePath = FilePathUtil.from(this.getDirectory()).add(TEMPLATE_DIRECTORY).getPath();
+	public Optional<EditorPageData> loadTemplate(String templateName) {
+		final Path templatePath = FilePathUtil.from(this.getDirectory()).add(SECTION_DIRECTORY).getPath();
 		if (!Files.exists(templatePath)) {
 			return Optional.empty();
 		}
@@ -51,7 +50,7 @@ public class PageTemplateService {
 			logger.error(e.getMessage(), e);
 			return Optional.empty();
 		}
-		return Optional.of(editorPageData); 
+		return Optional.of(editorPageData);
 	}
 
 	private FileInfo toFileInfo(File file) {
@@ -61,8 +60,7 @@ public class PageTemplateService {
 	}
 
 	private String createUrl(String fileName) {
-		final String url = ResourceController.TEMPLATE_THUMBNAIL.replace("{fileName:.+}", fileName);
-		return url;
+		return ResourceController.SECTION_THUMBNAIL.replace("{fileName:.+}", fileName);
 	}
 
 	private String createThumbnailUrl(String fileName) {
@@ -75,7 +73,7 @@ public class PageTemplateService {
 	}
 
 	public Path getDirectory() {
-		final Path path = FilePathUtil.createSharePath().add(TEMPLATE_DIRECTORY).getPath();
+		final Path path = FilePathUtil.createSharePath().add(SECTION_DIRECTORY).getPath();
 		if (!Files.exists(path)) {
 			try {
 				Files.createDirectories(path);

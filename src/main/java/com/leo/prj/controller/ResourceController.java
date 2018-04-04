@@ -18,6 +18,10 @@ public class ResourceController {
 
 	public static final String TEMPLATE_THUMBNAIL = "/template/thumbnail/{fileName:.+}";
 
+	public static final String SECTION_THUMBNAIL = "/section/thumbnail/{fileName:.+}";
+
+	public static final String POPUP_THUMBNAIL = "/popup/thumbnail/{fileName:.+}";
+
 	@Autowired
 	private ImageResourceService imageResourceService;
 
@@ -30,6 +34,18 @@ public class ResourceController {
 
 	@GetMapping(TEMPLATE_THUMBNAIL)
 	public ResponseEntity<Resource> getTemplateThumbnailResource(@PathVariable String fileName) throws Exception {
+		final Resource image = new UrlResource(this.imageResourceService.getTemplateThumbnailResource(fileName));
+		return ResponseEntity.ok(image);
+	}
+
+	@GetMapping(SECTION_THUMBNAIL)
+	public ResponseEntity<Resource> getSectionThumbnailResource(@PathVariable String fileName) throws Exception {
+		final Resource image = new UrlResource(this.imageResourceService.getTemplateThumbnailResource(fileName));
+		return ResponseEntity.ok(image);
+	}
+
+	@GetMapping(POPUP_THUMBNAIL)
+	public ResponseEntity<Resource> getPopupThumbnailResource(@PathVariable String fileName) throws Exception {
 		final Resource image = new UrlResource(this.imageResourceService.getTemplateThumbnailResource(fileName));
 		return ResponseEntity.ok(image);
 	}

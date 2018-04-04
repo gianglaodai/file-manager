@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
 import com.leo.prj.service.page.PageService;
-import com.leo.prj.service.pagetemp.PageTemplateService;
+import com.leo.prj.service.template.TemplateService;
 
 @CrossOrigin
 @RestController
@@ -24,7 +24,7 @@ public class PageController {
 	private PageService pageService;
 
 	@Autowired
-	private PageTemplateService pageTemplateService;
+	private TemplateService pageTemplateService;
 
 	@PostMapping("/savePage")
 	public ResponseEntity<Boolean> savePage(@RequestBody EditorPageData data) {
