@@ -46,11 +46,11 @@ public class PageController {
 	}
 
 	@PostMapping("/createPage")
-	public ResponseEntity<Boolean> createPage(@RequestParam String pageName, @RequestParam String templateName){	
-		Optional<EditorPageData> template = this.pageTemplateService.loadTemplate(templateName);
-		EditorPageData page = new EditorPageData();
+	public ResponseEntity<Boolean> createPage(@RequestParam String pageName, @RequestParam String templateName) {
+		final Optional<EditorPageData> template = this.pageTemplateService.load(templateName);
+		final EditorPageData page = new EditorPageData();
 		page.setPageName(pageName);
-		template.ifPresent(data-> page.setJsonContent(data.getJsonContent()));
+		template.ifPresent(data -> page.setJsonContent(data.getJsonContent()));
 		this.pageService.savePage(page);
 		return ResponseEntity.ok(true);
 	}

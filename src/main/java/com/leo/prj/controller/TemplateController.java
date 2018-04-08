@@ -20,12 +20,12 @@ public class TemplateController {
 	private TemplateService pageTemplateService;
 
 	@GetMapping("/templates")
-	public List<FileInfo> getPageTemplates() {
-		return this.pageTemplateService.getTemplates();
+	public List<FileInfo> getTemplates() {
+		return this.pageTemplateService.getAll();
 	}
 
 	@GetMapping("/loadTemplate")
 	public EditorPageData loadTemplate(@RequestParam String templateName) {
-		return this.pageTemplateService.loadTemplate(templateName).get();
+		return this.pageTemplateService.load(templateName).get();
 	}
 }
