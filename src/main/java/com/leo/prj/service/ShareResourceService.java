@@ -1,12 +1,10 @@
 package com.leo.prj.service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,11 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
+import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.service.img.ImageService;
 import com.leo.prj.util.FileFilterUtil;
 import com.leo.prj.util.FilePathUtil;
 
 public abstract class ShareResourceService {
+	public static final String LANDINGPAGE_EXTENSION = "ldp";
+	private static final String HTML_EXTENSION = "html";
+
 	private static final Logger logger = Logger.getLogger(ShareResourceService.class);
 
 	@Autowired
@@ -32,21 +34,42 @@ public abstract class ShareResourceService {
 				.map(file -> this.toFileInfo(file)).collect(Collectors.toList());
 	}
 
-	public abstract String getDirectoryPath();
+	private Path createFilePath(String pageName) {
+		return FilePathUtil.from(this.getDirectory()).add(pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION)
+				.getPath();
+	}
+
+	private Path createHTMLPath(String pageName) {
+		return FilePathUtil.from(this.getDirectory()).add(pageName + CommonConstant.DOT + HTML_EXTENSION).getPath();
+	}
+
+	public boolean save(EditorPageData data) {
+		try {
+			Files.write(this.createFilePath(data.getPageName()), data.getJsonContent().getBytes());
+			Files.write(this.createHTMLPath(data.getPageName()), data.getHtmlContent().getBytes());
+		} catch (final IOException e) {
+			logger.error(e.getMessage(), e);
+			return false;
+		}
+		return true;
+	}
+
+	public abstract Path getDirectoryPath();
 
 	public Optional<EditorPageData> load(String fileName) {
-		final Path templatePath = FilePathUtil.from(this.getDirectory()).add(fileName).getPath();
-		if (!Files.exists(templatePath)) {
+		final Path filePath = this.createFilePath(fileName);
+		final Path fileHtmlPath = this.createHTMLPath(fileName);
+		if (!Files.exists(filePath)) {
 			return Optional.empty();
 		}
 		final EditorPageData editorPageData = new EditorPageData();
 		editorPageData.setPageName(fileName);
-		try (final InputStream fis = new FileInputStream(templatePath.toFile());
-				ObjectInput ois = new ObjectInputStream(fis)) {
-			editorPageData.setJsonContent((String) ois.readObject());
+		try {
+			editorPageData.setJsonContent(Arrays.toString(Files.readAllBytes(filePath)));
+			editorPageData.setHtmlContent(Arrays.toString(Files.readAllBytes(fileHtmlPath)));
 		} catch (final Exception e) {
 			logger.error(e.getMessage(), e);
-			return Optional.empty();
+			return Optional.of(editorPageData);
 		}
 		return Optional.of(editorPageData);
 	}
@@ -74,7 +97,7 @@ public abstract class ShareResourceService {
 	}
 
 	private Path getDirectory() {
-		final Path path = FilePathUtil.createSharePath().add(this.getDirectoryPath()).getPath();
+		final Path path = this.getDirectoryPath();
 		if (!Files.exists(path)) {
 			try {
 				Files.createDirectories(path);
@@ -84,5 +107,26 @@ public abstract class ShareResourceService {
 			}
 		}
 		return path;
+	}
+
+	private boolean deleteFile(String fileName) {
+		try {
+			Files.deleteIfExists(this.createFilePath(fileName));
+			Files.deleteIfExists(this.createHTMLPath(fileName));
+		} catch (final Exception e) {
+			logger.error(e.getMessage(), e);
+			return false;
+		}
+		return true;
+	}
+
+	public int delete(List<String> fileNames) {
+		int deletedFile = 0;
+		for (final String fileName : fileNames) {
+			if (this.deleteFile(fileName)) {
+				deletedFile++;
+			}
+		}
+		return deletedFile;
 	}
 }

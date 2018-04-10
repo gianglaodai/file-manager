@@ -28,7 +28,7 @@ public class ImageInfoService implements FileInfoService<FileInfo> {
 	private UserService userService;
 
 	@Override
-	public List<FileInfo> getFileInfos() {
+	public List<FileInfo> getAll() {
 		return this.imageService.getFiles().stream().map(file -> this.toFileInfo(file)).collect(Collectors.toList());
 	}
 

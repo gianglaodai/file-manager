@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import com.leo.prj.service.FileService;
 
 @CrossOrigin
 @RestController
+@RequestMapping("/image")
 public class ImageController {
 	@Autowired
 	private FileService imageService;
@@ -26,18 +28,18 @@ public class ImageController {
 	@Autowired
 	private FileInfoService<FileInfo> imageInfoService;
 
-	@PostMapping("/images")
-	public ResponseEntity<UploadFilesResult> uploadImages(@RequestParam("file") final List<MultipartFile> files) {
+	@PostMapping("/save")
+	public ResponseEntity<UploadFilesResult> save(@RequestParam("file") final List<MultipartFile> files) {
 		return ResponseEntity.ok(this.imageService.upload(files));
 	}
 
-	@GetMapping("/images")
-	public ResponseEntity<List<FileInfo>> getImages() {
-		return ResponseEntity.ok(this.imageInfoService.getFileInfos());
+	@GetMapping("/getAll")
+	public ResponseEntity<List<FileInfo>> getAll() {
+		return ResponseEntity.ok(this.imageInfoService.getAll());
 	}
 
-	@DeleteMapping("/images")
-	public ResponseEntity<Integer> deleteImage(@RequestParam List<String> fileNames) {
+	@DeleteMapping("/delete")
+	public ResponseEntity<Integer> delete(@RequestParam List<String> fileNames) {
 		return ResponseEntity.ok(this.imageService.deleteFiles(fileNames));
 	}
 }

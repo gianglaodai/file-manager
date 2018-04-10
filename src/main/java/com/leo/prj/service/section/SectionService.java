@@ -1,17 +1,20 @@
 package com.leo.prj.service.section;
 
+import java.nio.file.Path;
+
 import org.springframework.stereotype.Service;
 
 import com.leo.prj.controller.ResourceController;
 import com.leo.prj.service.ShareResourceService;
+import com.leo.prj.util.FilePathUtil;
 
 @Service
 public class SectionService extends ShareResourceService {
 	private static final String SECTION_DIRECTORY = "section";
 
 	@Override
-	public String getDirectoryPath() {
-		return SECTION_DIRECTORY;
+	public Path getDirectoryPath() {
+		return FilePathUtil.createSharePath().add(SECTION_DIRECTORY).getPath();
 	}
 
 	@Override

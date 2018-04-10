@@ -6,7 +6,7 @@ import java.util.List;
 import com.leo.prj.bean.FileInfo;
 
 public interface FileInfoService<F extends FileInfo> {
-	public List<F> getFileInfos();
+	public List<F> getAll();
 
 	public F toFileInfo(File file);
 }
