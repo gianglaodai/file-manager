@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.leo.prj.constant.CommonConstant;
-import com.leo.prj.service.ShareResourceService;
+import com.leo.prj.service.ResourceService;
 import com.leo.prj.service.UserService;
 import com.leo.prj.util.FilePathUtil;
 
 @Service
-public class PageService extends ShareResourceService {
+public class PageService extends ResourceService {
 
 	private static final String PAGE_DIRECTORY = "page";
 

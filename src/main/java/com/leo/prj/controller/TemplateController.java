@@ -2,6 +2,8 @@ package com.leo.prj.controller;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,18 +26,18 @@ public class TemplateController {
 	@Autowired
 	private TemplateService templateService;
 
-	@GetMapping("/getAll")
-	public ResponseEntity<List<FileInfo>> getAll() {
-		return ResponseEntity.ok(this.templateService.getAll());
+	@GetMapping("/getAll/{catalog}")
+	public ResponseEntity<List<FileInfo>> getAll(@PathParam("catalog") String catalog) {
+		return ResponseEntity.ok(this.templateService.getAllByCatalog(catalog));
 	}
 
-	@GetMapping("/load")
-	public ResponseEntity<EditorPageData> load(@RequestParam String templateName) {
-		return ResponseEntity.ok(this.templateService.load(templateName).get());
+	@GetMapping("/load/{catalog}")
+	public ResponseEntity<EditorPageData> load(@PathParam("catalog") String catalog, @RequestParam String fileName) {
+		return ResponseEntity.ok(this.templateService.loadFromCatalog(catalog, fileName).get());
 	}
 
-	@PostMapping("/save/:catalog")
-	public ResponseEntity<Boolean> save(@RequestBody EditorPageData data) {
-		return ResponseEntity.ok(this.templateService.save(data));
+	@PostMapping("/save/{catalog}")
+	public ResponseEntity<Boolean> save(@PathParam("catalog") String catalog, @RequestBody EditorPageData data) {
+		return ResponseEntity.ok(this.templateService.saveToCatalog(catalog, data));
 	}
 }

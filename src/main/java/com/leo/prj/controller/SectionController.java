@@ -2,6 +2,8 @@ package com.leo.prj.controller;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,18 +23,18 @@ public class SectionController {
 	@Autowired
 	private SectionService sectionService;
 
-	@GetMapping("/getAll")
-	public ResponseEntity<List<FileInfo>> getSections() {
-		return ResponseEntity.ok(this.sectionService.getAll());
+	@GetMapping("/getAll/{catalog}")
+	public ResponseEntity<List<FileInfo>> getSections(@PathParam("catalog") String catalog) {
+		return ResponseEntity.ok(this.sectionService.getAllByCatalog(catalog));
 	}
 
-	@GetMapping("/load")
-	public ResponseEntity<EditorPageData> load(@RequestParam String sectionName) {
-		return ResponseEntity.ok(this.sectionService.load(sectionName).get());
+	@GetMapping("/load/{catalog}")
+	public ResponseEntity<EditorPageData> load(@PathParam("catalog") String catalog, @RequestParam String fileName) {
+		return ResponseEntity.ok(this.sectionService.loadFromCatalog(catalog, fileName).get());
 	}
 
-	@GetMapping("/saveSection")
-	public ResponseEntity<Boolean> save(@RequestParam EditorPageData data) {
-		return ResponseEntity.ok(this.sectionService.save(data));
+	@GetMapping("/saveSection/{catalog}")
+	public ResponseEntity<Boolean> save(@PathParam("catalog") String catalog, @RequestParam EditorPageData data) {
+		return ResponseEntity.ok(this.sectionService.saveToCatalog(catalog, data));
 	}
 }

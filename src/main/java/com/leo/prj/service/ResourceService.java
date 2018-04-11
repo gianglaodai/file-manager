@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,12 +21,13 @@ import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.service.img.ImageService;
 import com.leo.prj.util.FileFilterUtil;
 import com.leo.prj.util.FilePathUtil;
+import com.leo.prj.util.StringUtil;
 
-public abstract class ShareResourceService {
+public abstract class ResourceService {
 	public static final String LANDINGPAGE_EXTENSION = "ldp";
 	private static final String HTML_EXTENSION = "html";
 
-	private static final Logger logger = Logger.getLogger(ShareResourceService.class);
+	private static final Logger logger = Logger.getLogger(ResourceService.class);
 
 	@Autowired
 	private ImageService imageService;
@@ -34,19 +37,52 @@ public abstract class ShareResourceService {
 				.map(file -> this.toFileInfo(file)).collect(Collectors.toList());
 	}
 
+	public List<FileInfo> getAllByCatalog(String catalog) {
+		if (StringUtil.isBlank(catalog)) {
+			final List<FileInfo> files = new ArrayList<>();
+			Stream.of(this.getDirectory().toFile().listFiles(file -> file.isDirectory()))
+					.forEach(file -> files.addAll(this.getAllByDirectory(file)));
+			return files;
+		}
+		return this.getAllByDirectory(FilePathUtil.from(this.getDirectory()).add(catalog).getPath().toFile());
+	}
+
+	private List<FileInfo> getAllByDirectory(File directory) {
+		if (!directory.exists()) {
+			directory.mkdirs();
+			return Collections.emptyList();
+		}
+		return Stream.of(directory.listFiles(FileFilterUtil.IS_LANDING_PAGE)).map(file -> this.toFileInfo(file))
+				.collect(Collectors.toList());
+	}
+
 	private Path createFilePath(String pageName) {
 		return FilePathUtil.from(this.getDirectory()).add(pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION)
 				.getPath();
+	}
+
+	private Path createFilePath(String catalog, String pageName) {
+		return FilePathUtil.from(this.getDirectory()).add(catalog)
+				.add(pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION).getPath();
 	}
 
 	private Path createHTMLPath(String pageName) {
 		return FilePathUtil.from(this.getDirectory()).add(pageName + CommonConstant.DOT + HTML_EXTENSION).getPath();
 	}
 
+	private Path createHTMLPath(String catalog, String pageName) {
+		return FilePathUtil.from(this.getDirectory()).add(catalog).add(pageName + CommonConstant.DOT + HTML_EXTENSION)
+				.getPath();
+	}
+
 	public boolean save(EditorPageData data) {
+		return this.save(this.createFilePath(data.getPageName()), this.createHTMLPath(data.getPageName()), data);
+	}
+
+	private boolean save(Path filePath, Path fileHTMLPath, EditorPageData data) {
 		try {
-			Files.write(this.createFilePath(data.getPageName()), data.getJsonContent().getBytes());
-			Files.write(this.createHTMLPath(data.getPageName()), data.getHtmlContent().getBytes());
+			Files.write(filePath, data.getJsonContent().getBytes());
+			Files.write(fileHTMLPath, data.getHtmlContent().getBytes());
 		} catch (final IOException e) {
 			logger.error(e.getMessage(), e);
 			return false;
@@ -54,11 +90,20 @@ public abstract class ShareResourceService {
 		return true;
 	}
 
+	public boolean saveToCatalog(String catalog, EditorPageData data) {
+		return this.save(this.createFilePath(catalog, data.getPageName()),
+				this.createHTMLPath(catalog, data.getPageName()), data);
+	}
+
 	public abstract Path getDirectoryPath();
 
 	public Optional<EditorPageData> load(String fileName) {
 		final Path filePath = this.createFilePath(fileName);
 		final Path fileHtmlPath = this.createHTMLPath(fileName);
+		return this.load(filePath, fileHtmlPath, fileName);
+	}
+
+	private Optional<EditorPageData> load(Path filePath, Path fileHtmlPath, String fileName) {
 		if (!Files.exists(filePath)) {
 			return Optional.empty();
 		}
@@ -72,6 +117,12 @@ public abstract class ShareResourceService {
 			return Optional.of(editorPageData);
 		}
 		return Optional.of(editorPageData);
+	}
+
+	public Optional<EditorPageData> loadFromCatalog(String catalog, String fileName) {
+		final Path filePath = this.createFilePath(catalog, fileName);
+		final Path fileHtmlPath = this.createHTMLPath(catalog, fileName);
+		return this.load(filePath, fileHtmlPath, fileName);
 	}
 
 	private FileInfo toFileInfo(File file) {

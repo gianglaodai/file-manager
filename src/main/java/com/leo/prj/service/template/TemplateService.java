@@ -5,11 +5,11 @@ import java.nio.file.Path;
 import org.springframework.stereotype.Service;
 
 import com.leo.prj.controller.ResourceController;
-import com.leo.prj.service.ShareResourceService;
+import com.leo.prj.service.ResourceService;
 import com.leo.prj.util.FilePathUtil;
 
 @Service
-public class TemplateService extends ShareResourceService {
+public class TemplateService extends ResourceService {
 	private static final String TEMPLATE_DIRECTORY = "template";
 
 	@Override
