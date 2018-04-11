@@ -2,10 +2,10 @@ package com.leo.prj.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -81,8 +81,8 @@ public abstract class ResourceService {
 
 	private boolean save(Path filePath, Path fileHTMLPath, EditorPageData data) {
 		try {
-			Files.write(filePath, data.getJsonContent().getBytes());
-			Files.write(fileHTMLPath, data.getHtmlContent().getBytes());
+			Files.write(filePath, data.getJsonContent().getBytes(Charset.forName(CommonConstant.DEFAULT_CHARSET)));
+			Files.write(fileHTMLPath, data.getHtmlContent().getBytes(Charset.forName(CommonConstant.DEFAULT_CHARSET)));
 		} catch (final IOException e) {
 			logger.error(e.getMessage(), e);
 			return false;
@@ -110,8 +110,9 @@ public abstract class ResourceService {
 		final EditorPageData editorPageData = new EditorPageData();
 		editorPageData.setPageName(fileName);
 		try {
-			editorPageData.setJsonContent(Arrays.toString(Files.readAllBytes(filePath)));
-			editorPageData.setHtmlContent(Arrays.toString(Files.readAllBytes(fileHtmlPath)));
+			editorPageData.setJsonContent(Files.readAllLines(filePath, CommonConstant.CHARSET_UTF8).get(0));
+			editorPageData.setHtmlContent(Files.readAllLines(fileHtmlPath, CommonConstant.CHARSET_UTF8).stream()
+					.collect(Collectors.joining()));
 		} catch (final Exception e) {
 			logger.error(e.getMessage(), e);
 			return Optional.of(editorPageData);
