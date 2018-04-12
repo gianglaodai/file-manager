@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
+import com.leo.prj.bean.ShareFileInfo;
 import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.service.img.ImageService;
 import com.leo.prj.util.FileFilterUtil;
@@ -40,20 +41,20 @@ public abstract class ResourceService {
 		if (catalog == 0) {
 			final List<FileInfo> files = new ArrayList<>();
 			Stream.of(this.getDirectory().toFile().listFiles(file -> file.isDirectory()))
-					.forEach(file -> files.addAll(this.getAllByDirectory(file)));
+					.forEach(file -> files.addAll(this.getAllByDirectory(file, Integer.valueOf(file.getName()))));
 			return files;
 		}
 		return this.getAllByDirectory(
-				FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog)).getPath().toFile());
+				FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog)).getPath().toFile(), catalog);
 	}
 
-	private List<FileInfo> getAllByDirectory(File directory) {
+	private List<FileInfo> getAllByDirectory(File directory, int catalog) {
 		if (!directory.exists()) {
 			directory.mkdirs();
 			return Collections.emptyList();
 		}
-		return Stream.of(directory.listFiles(FileFilterUtil.IS_LANDING_PAGE)).map(file -> this.toFileInfo(file))
-				.collect(Collectors.toList());
+		return Stream.of(directory.listFiles(FileFilterUtil.IS_LANDING_PAGE))
+				.map(file -> this.toShareFileInfo(file, catalog)).collect(Collectors.toList());
 	}
 
 	private Path createFilePath(String pageName) {
@@ -129,6 +130,13 @@ public abstract class ResourceService {
 	private FileInfo toFileInfo(File file) {
 		final FileInfo fileInfo = new FileInfo(file);
 		fileInfo.setThumbnail(this.createThumbnailUrl(file.getName()));
+		return fileInfo;
+	}
+
+	private FileInfo toShareFileInfo(File file, int catalog) {
+		final ShareFileInfo fileInfo = new ShareFileInfo(file);
+		fileInfo.setThumbnail(this.createThumbnailUrl(file.getName()));
+		fileInfo.setCatalog(catalog);
 		return fileInfo;
 	}
 

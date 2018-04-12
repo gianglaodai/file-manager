@@ -11,4 +11,12 @@ public class UtilConfiguration {
 	public Tika tika() {
 		return new Tika();
 	}
+
+	@Bean
+	public CharacterEncodingFilter characterEncodingFilter() {
+		final CharacterEncodingFilter filter = new CharacterEncodingFilter();
+		filter.setEncoding("UTF-8");
+		filter.setForceEncoding(true);
+		return filter;
+	}
 }

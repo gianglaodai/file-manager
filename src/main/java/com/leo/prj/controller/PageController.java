@@ -29,7 +29,7 @@ public class PageController {
 	@Autowired
 	private TemplateService templateService;
 
-	@PostMapping("/save")
+	@PostMapping(value = "/save")
 	public ResponseEntity<Boolean> save(@RequestBody EditorPageData data) {
 		return ResponseEntity.ok(this.pageService.save(data));
 	}
@@ -49,8 +49,9 @@ public class PageController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Boolean> create(@RequestParam String pageName, @RequestParam String templateName) {
-		final Optional<EditorPageData> template = this.templateService.load(templateName);
+	public ResponseEntity<Boolean> create(@RequestParam String pageName, @RequestParam String templateName,
+			@RequestParam int catalog) {
+		final Optional<EditorPageData> template = this.templateService.loadFromCatalog(catalog, templateName);
 		final EditorPageData page = new EditorPageData();
 		page.setPageName(pageName);
 		template.ifPresent(data -> {
