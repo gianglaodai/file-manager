@@ -65,4 +65,9 @@ public class PageController {
 	public ResponseEntity<Integer> delete(@RequestParam List<String> fileNames) {
 		return ResponseEntity.ok(this.pageService.delete(fileNames));
 	}
+
+	@GetMapping("/preview")
+	public String preview(@RequestParam String pageName) {
+		return this.pageService.preview(pageName);
+	}
 }

@@ -21,7 +21,6 @@ import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.service.img.ImageService;
 import com.leo.prj.util.FileFilterUtil;
 import com.leo.prj.util.FilePathUtil;
-import com.leo.prj.util.StringUtil;
 
 public abstract class ResourceService {
 	public static final String LANDINGPAGE_EXTENSION = "ldp";
@@ -37,14 +36,15 @@ public abstract class ResourceService {
 				.map(file -> this.toFileInfo(file)).collect(Collectors.toList());
 	}
 
-	public List<FileInfo> getAllByCatalog(String catalog) {
-		if (StringUtil.isBlank(catalog)) {
+	public List<FileInfo> getAllByCatalog(int catalog) {
+		if (catalog == 0) {
 			final List<FileInfo> files = new ArrayList<>();
 			Stream.of(this.getDirectory().toFile().listFiles(file -> file.isDirectory()))
 					.forEach(file -> files.addAll(this.getAllByDirectory(file)));
 			return files;
 		}
-		return this.getAllByDirectory(FilePathUtil.from(this.getDirectory()).add(catalog).getPath().toFile());
+		return this.getAllByDirectory(
+				FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog)).getPath().toFile());
 	}
 
 	private List<FileInfo> getAllByDirectory(File directory) {
@@ -90,9 +90,9 @@ public abstract class ResourceService {
 		return true;
 	}
 
-	public boolean saveToCatalog(String catalog, EditorPageData data) {
-		return this.save(this.createFilePath(catalog, data.getPageName()),
-				this.createHTMLPath(catalog, data.getPageName()), data);
+	public boolean saveToCatalog(int catalog, EditorPageData data) {
+		return this.save(this.createFilePath(String.valueOf(catalog), data.getPageName()),
+				this.createHTMLPath(String.valueOf(catalog), data.getPageName()), data);
 	}
 
 	public abstract Path getDirectoryPath();
@@ -120,9 +120,9 @@ public abstract class ResourceService {
 		return Optional.of(editorPageData);
 	}
 
-	public Optional<EditorPageData> loadFromCatalog(String catalog, String fileName) {
-		final Path filePath = this.createFilePath(catalog, fileName);
-		final Path fileHtmlPath = this.createHTMLPath(catalog, fileName);
+	public Optional<EditorPageData> loadFromCatalog(int catalog, String fileName) {
+		final Path filePath = this.createFilePath(String.valueOf(catalog), fileName);
+		final Path fileHtmlPath = this.createHTMLPath(String.valueOf(catalog), fileName);
 		return this.load(filePath, fileHtmlPath, fileName);
 	}
 

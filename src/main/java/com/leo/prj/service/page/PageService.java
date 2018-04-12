@@ -1,10 +1,12 @@
 package com.leo.prj.service.page;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.service.ResourceService;
 import com.leo.prj.service.UserService;
@@ -25,6 +27,14 @@ public class PageService extends ResourceService {
 
 	@Override
 	public String getThumbnailUrl() {
+		return CommonConstant.EMPTY;
+	}
+
+	public String preview(String pageName) {
+		final Optional<EditorPageData> file = this.load(pageName);
+		if (file.isPresent()) {
+			return file.get().getHtmlContent();
+		}
 		return CommonConstant.EMPTY;
 	}
 
