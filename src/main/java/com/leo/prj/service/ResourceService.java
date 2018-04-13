@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +21,7 @@ import com.leo.prj.bean.FileInfo;
 import com.leo.prj.bean.ShareFileInfo;
 import com.leo.prj.constant.CommonConstant;
 import com.leo.prj.service.img.ImageService;
+import com.leo.prj.service.img.ImageUploadService;
 import com.leo.prj.util.FileFilterUtil;
 import com.leo.prj.util.FilePathUtil;
 
@@ -31,6 +33,9 @@ public abstract class ResourceService {
 
 	@Autowired
 	private ImageService imageService;
+
+	@Autowired
+	private ImageUploadService imageUploadService;
 
 	public List<FileInfo> getAll() {
 		return Stream.of(this.getDirectory().toFile().listFiles(FileFilterUtil.IS_LANDING_PAGE))
@@ -63,8 +68,16 @@ public abstract class ResourceService {
 	}
 
 	private Path createFilePath(String catalog, String pageName) {
-		return FilePathUtil.from(this.getDirectory()).add(catalog)
-				.add(pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION).getPath();
+		final FilePathUtil directory = FilePathUtil.from(this.getDirectory()).add(catalog);
+		final Path directoryPath = directory.getPath();
+		if (!Files.exists(directoryPath)) {
+			try {
+				Files.createDirectories(directoryPath);
+			} catch (final IOException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		return directory.add(pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION).getPath();
 	}
 
 	private Path createHTMLPath(String pageName) {
@@ -104,6 +117,12 @@ public abstract class ResourceService {
 		return this.load(filePath, fileHtmlPath, fileName);
 	}
 
+	public Optional<EditorPageData> loadFromCatalog(String fileName, int catalog) {
+		final Path filePath = this.createFilePath(String.valueOf(catalog), fileName);
+		final Path fileHtmlPath = this.createHTMLPath(String.valueOf(catalog), fileName);
+		return this.load(filePath, fileHtmlPath, fileName);
+	}
+
 	private Optional<EditorPageData> load(Path filePath, Path fileHtmlPath, String fileName) {
 		if (!Files.exists(filePath)) {
 			return Optional.empty();
@@ -137,6 +156,7 @@ public abstract class ResourceService {
 		final ShareFileInfo fileInfo = new ShareFileInfo(file);
 		fileInfo.setThumbnail(this.createThumbnailUrl(file.getName()));
 		fileInfo.setCatalog(catalog);
+		fileInfo.setThumbnailUrl(this.createThumbnailUrl(file.getName(), catalog));
 		return fileInfo;
 	}
 
@@ -147,13 +167,30 @@ public abstract class ResourceService {
 		return url;
 	}
 
+	private String createUrl(String fileName, int catalog) {
+		String url = this.getThumbnailUrl().replace("{fileName:.+}", fileName);
+		url = url.replace("{catalog}", String.valueOf(catalog));
+		return url;
+	}
+
 	private String createThumbnailUrl(String fileName) {
-		final String thumbnailName = this.imageService.getThumbnailName(fileName);
+		final String thumbnailName = FilenameUtils.removeExtension(fileName) + CommonConstant.DOT
+				+ CommonConstant.THUMBNAIL + CommonConstant.DOT + FilenameUtils.getExtension(".jpg");
 		return this.createUrl(thumbnailName);
+	}
+
+	private String createThumbnailUrl(String fileName, int catalog) {
+		final String thumbnailName = FilenameUtils.removeExtension(fileName) + CommonConstant.DOT
+				+ CommonConstant.THUMBNAIL + CommonConstant.DOT + FilenameUtils.getExtension(".jpg");
+		return this.createUrl(thumbnailName, catalog);
 	}
 
 	public Path getFilePath(String fileName) {
 		return FilePathUtil.from(this.getDirectory()).add(fileName).getPath();
+	}
+
+	public Path getFilePath(int catalog, String fileName) {
+		return FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog)).add(fileName).getPath();
 	}
 
 	private Path getDirectory() {

@@ -1,6 +1,7 @@
 package com.leo.prj.service.img;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +39,8 @@ public class ImageInfoService implements FileInfoService<FileInfo> {
 		final String fileName = file.getName();
 		imageInfo.setFileName(FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileName)));
 		try {
-			imageInfo.setUrl(URLEncoder.encode(this.createUrl(fileName), CommonConstant.DEFAULT_CHARSET));
-			imageInfo
-					.setThumbnail(URLEncoder.encode(this.createThumbnailUrl(fileName), CommonConstant.DEFAULT_CHARSET));
+			imageInfo.setUrl(this.createUrl(fileName));
+			imageInfo.setThumbnail(this.createThumbnailUrl(fileName));
 		} catch (final Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -49,7 +49,11 @@ public class ImageInfoService implements FileInfoService<FileInfo> {
 
 	private String createUrl(String fileName) {
 		String url = ResourceController.IMAGE_URL.replace("{user}", this.userService.getCurrentUser());
-		url = url.replace("{fileName:.+}", fileName);
+		try {
+			url = url.replace("{fileName:.+}", URLEncoder.encode(fileName, CommonConstant.DEFAULT_CHARSET));
+		} catch (final UnsupportedEncodingException e) {
+			logger.error(e.getMessage(), e);
+		}
 		return url;
 	}
 

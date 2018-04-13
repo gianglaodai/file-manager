@@ -16,11 +16,11 @@ import com.leo.prj.service.img.ImageResourceService;
 public class ResourceController {
 	public static final String IMAGE_URL = "/img/{user}/{fileName:.+}";
 
-	public static final String TEMPLATE_THUMBNAIL = "/template/thumbnail/{fileName:.+}";
+	public static final String TEMPLATE_THUMBNAIL = "/template/thumbnail/{catalog}/{fileName:.+}";
 
-	public static final String SECTION_THUMBNAIL = "/section/thumbnail/{fileName:.+}";
+	public static final String SECTION_THUMBNAIL = "/section/thumbnail/{catalog}/{fileName:.+}";
 
-	public static final String POPUP_THUMBNAIL = "/popup/thumbnail/{fileName:.+}";
+	public static final String POPUP_THUMBNAIL = "/popup/thumbnail/{catalog}/{fileName:.+}";
 
 	@Autowired
 	private ImageResourceService imageResourceService;
@@ -33,20 +33,26 @@ public class ResourceController {
 	}
 
 	@GetMapping(TEMPLATE_THUMBNAIL)
-	public ResponseEntity<Resource> getTemplateThumbnailResource(@PathVariable String fileName) throws Exception {
-		final Resource image = new UrlResource(this.imageResourceService.getTemplateThumbnailResource(fileName));
+	public ResponseEntity<Resource> getTemplateThumbnailResource(@PathVariable int catalog,
+			@PathVariable String fileName) throws Exception {
+		final Resource image = new UrlResource(
+				this.imageResourceService.getTemplateThumbnailResource(fileName, catalog));
 		return ResponseEntity.ok(image);
 	}
 
 	@GetMapping(SECTION_THUMBNAIL)
-	public ResponseEntity<Resource> getSectionThumbnailResource(@PathVariable String fileName) throws Exception {
-		final Resource image = new UrlResource(this.imageResourceService.getTemplateThumbnailResource(fileName));
+	public ResponseEntity<Resource> getSectionThumbnailResource(@PathVariable int catalog,
+			@PathVariable String fileName) throws Exception {
+		final Resource image = new UrlResource(
+				this.imageResourceService.getTemplateThumbnailResource(fileName, catalog));
 		return ResponseEntity.ok(image);
 	}
 
 	@GetMapping(POPUP_THUMBNAIL)
-	public ResponseEntity<Resource> getPopupThumbnailResource(@PathVariable String fileName) throws Exception {
-		final Resource image = new UrlResource(this.imageResourceService.getTemplateThumbnailResource(fileName));
+	public ResponseEntity<Resource> getPopupThumbnailResource(@PathVariable int catalog, @PathVariable String fileName)
+			throws Exception {
+		final Resource image = new UrlResource(
+				this.imageResourceService.getTemplateThumbnailResource(fileName, catalog));
 		return ResponseEntity.ok(image);
 	}
 }

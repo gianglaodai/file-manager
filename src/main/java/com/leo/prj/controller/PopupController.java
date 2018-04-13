@@ -21,24 +21,22 @@ import com.leo.prj.service.popup.PopupService;
 @RestController
 @RequestMapping("/popup")
 public class PopupController {
-	public class SectionController {
-		@Autowired
-		private PopupService popupService;
 
-		@GetMapping("/getAll/{catalog}")
-		public ResponseEntity<List<FileInfo>> getAll(@PathVariable("catalog") int catalog) {
-			return ResponseEntity.ok(this.popupService.getAllByCatalog(catalog));
-		}
+	@Autowired
+	private PopupService popupService;
 
-		@GetMapping("/load/{catalog}")
-		public ResponseEntity<EditorPageData> load(@PathVariable("catalog") int catalog,
-				@RequestParam String fileName) {
-			return ResponseEntity.ok(this.popupService.loadFromCatalog(catalog, fileName).get());
-		}
+	@GetMapping("/getAll/{catalog}")
+	public ResponseEntity<List<FileInfo>> getAll(@PathVariable int catalog) {
+		return ResponseEntity.ok(this.popupService.getAllByCatalog(catalog));
+	}
 
-		@PostMapping("/save/{catalog}")
-		public ResponseEntity<Boolean> save(@PathVariable("catalog") int catalog, @RequestBody EditorPageData data) {
-			return ResponseEntity.ok(this.popupService.saveToCatalog(catalog, data));
-		}
+	@GetMapping("/load/{catalog}")
+	public ResponseEntity<EditorPageData> load(@PathVariable int catalog, @RequestParam String fileName) {
+		return ResponseEntity.ok(this.popupService.loadFromCatalog(catalog, fileName).get());
+	}
+
+	@PostMapping("/save/{catalog}")
+	public ResponseEntity<Boolean> save(@PathVariable int catalog, @RequestBody EditorPageData data) {
+		return ResponseEntity.ok(this.popupService.saveToCatalog(catalog, data));
 	}
 }

@@ -2,6 +2,9 @@ package com.leo.prj.service.img;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
@@ -52,11 +55,21 @@ public class ImageUploadService {
 		}
 		final UploadFileStatus uploadFileStatus = this.uploadService.uploadFile(uploadFile,
 				Paths.get(directoryPath).toFile(), fileName) ? UploadFileStatus.VALID : UploadFileStatus.INVALID;
-		this.createThumbnailName(FilePathUtil.from(directoryPath).add(fileName).getPath().toFile());
+		this.createThumbnail(FilePathUtil.from(directoryPath).add(fileName).getPath().toFile());
 		return uploadFileStatus;
 	}
 
-	private void createThumbnailName(File file) {
+	public boolean createThumbnail(final MultipartFile uploadFile, final Path directoryPath) {
+		try {
+			this.uploadService.uploadFile(uploadFile, directoryPath.toFile(), uploadFile.getOriginalFilename());
+			Files.delete(FilePathUtil.from(directoryPath).add(uploadFile.getOriginalFilename()).getPath());
+		} catch (final IOException e) {
+			throw new RuntimeException("Can't delete file: " + uploadFile.getOriginalFilename());
+		}
+		return true;
+	}
+
+	public void createThumbnail(File file) {
 		try {
 			final BufferedImage bufferedImage = ImageIO.read(file);
 			Thumbnails.of(file)

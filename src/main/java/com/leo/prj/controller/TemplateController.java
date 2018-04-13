@@ -26,18 +26,22 @@ public class TemplateController {
 	private TemplateService templateService;
 
 	@GetMapping("/getAll/{catalog}")
-	public ResponseEntity<List<FileInfo>> getAll(@PathVariable("catalog") int catalog) {
+	public ResponseEntity<List<FileInfo>> getAll(@PathVariable int catalog) {
 		return ResponseEntity.ok(this.templateService.getAllByCatalog(Integer.valueOf(catalog)));
 	}
 
 	@GetMapping("/load/{catalog}")
-	public ResponseEntity<EditorPageData> load(@PathVariable("catalog") int catalog, @RequestParam String fileName) {
+	public ResponseEntity<EditorPageData> load(@PathVariable int catalog, @RequestParam String fileName) {
 		return ResponseEntity.ok(this.templateService.loadFromCatalog(catalog, fileName).get());
 	}
 
 	@PostMapping("/save/{catalog}")
-	public ResponseEntity<Boolean> save(@PathVariable("catalog") int catalog, @RequestBody EditorPageData data) {
+	public ResponseEntity<Boolean> save(@PathVariable int catalog, @RequestBody EditorPageData data) {
 		return ResponseEntity.ok(this.templateService.saveToCatalog(catalog, data));
 	}
 
+	@GetMapping("/preview/{catalog}")
+	public String preview(@PathVariable int catalog, @RequestParam String fileName) {
+		return this.templateService.preview(fileName, catalog);
+	}
 }

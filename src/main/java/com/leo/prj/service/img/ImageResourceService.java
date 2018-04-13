@@ -24,7 +24,7 @@ public class ImageResourceService {
 	@Autowired
 	private TemplateService templateService;
 
-	@Autowired
+	// @Autowired
 	private PopupService popupService;
 
 	@Autowired
@@ -65,8 +65,8 @@ public class ImageResourceService {
 		return shareImageDirectory;
 	}
 
-	public URI getTemplateThumbnailResource(String fileName) {
-		final Path imagePath = this.templateService.getFilePath(fileName);
+	public URI getTemplateThumbnailResource(String fileName, int catalog) {
+		final Path imagePath = this.templateService.getFilePath(catalog, fileName);
 		if (Files.exists(imagePath)) {
 			return imagePath.toUri();
 		}
@@ -87,8 +87,8 @@ public class ImageResourceService {
 		return noImagePath;
 	}
 
-	public URI getPopupThumbnailResource(String fileName) {
-		final Path imagePath = this.popupService.getFilePath(fileName);
+	public URI getPopupThumbnailResource(String fileName, int catalog) {
+		final Path imagePath = this.popupService.getFilePath(catalog, fileName);
 		if (Files.exists(imagePath)) {
 			return imagePath.toUri();
 		}
@@ -109,8 +109,8 @@ public class ImageResourceService {
 		return noImagePath;
 	}
 
-	public URI getSectionThumbnailResource(String fileName) {
-		final Path imagePath = this.sectionService.getFilePath(fileName);
+	public URI getSectionThumbnailResource(String fileName, int catalog) {
+		final Path imagePath = this.sectionService.getFilePath(catalog, fileName);
 		if (Files.exists(imagePath)) {
 			return imagePath.toUri();
 		}
