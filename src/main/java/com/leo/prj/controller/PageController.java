@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,18 +31,18 @@ public class PageController {
 	private TemplateService templateService;
 
 	@PostMapping(value = "/save")
-	public ResponseEntity<Boolean> save(@RequestBody EditorPageData data) {
-		return ResponseEntity.ok(this.pageService.save(data));
+	public ResponseEntity<Boolean> save(@RequestBody EditorPageData data, @RequestParam String product) {
+		return ResponseEntity.ok(this.pageService.save(data, product));
 	}
 
 	@GetMapping("/getAll")
-	public ResponseEntity<List<FileInfo>> getAll() {
-		return ResponseEntity.ok(this.pageService.getAll());
+	public ResponseEntity<List<FileInfo>> getAll(@RequestParam String product) {
+		return ResponseEntity.ok(this.pageService.getAll(product));
 	}
 
 	@GetMapping("/load")
-	public ResponseEntity<EditorPageData> load(@RequestParam String pageName) {
-		final Optional<EditorPageData> pageData = this.pageService.load(pageName);
+	public ResponseEntity<EditorPageData> load(@RequestParam String pageName, @RequestParam String product) {
+		final Optional<EditorPageData> pageData = this.pageService.load(pageName, product);
 		if (pageData.isPresent()) {
 			return ResponseEntity.ok(pageData.get());
 		}
@@ -50,7 +51,7 @@ public class PageController {
 
 	@PostMapping("/create")
 	public ResponseEntity<Boolean> create(@RequestParam String pageName, @RequestParam String templateName,
-			@RequestParam int catalog) {
+			@RequestParam int catalog, @RequestParam String product) {
 		final Optional<EditorPageData> template = this.templateService.loadFromCatalog(catalog, templateName);
 		final EditorPageData page = new EditorPageData();
 		page.setPageName(pageName);
@@ -58,17 +59,22 @@ public class PageController {
 			page.setJsonContent(data.getJsonContent());
 			page.setHtmlContent(data.getHtmlContent());
 		});
-		this.pageService.save(page);
+		this.pageService.save(page, product);
 		return ResponseEntity.ok(true);
 	}
 
 	@DeleteMapping("/delete")
-	public ResponseEntity<Integer> delete(@RequestParam List<String> fileNames) {
-		return ResponseEntity.ok(this.pageService.delete(fileNames));
+	public ResponseEntity<Integer> delete(@RequestParam List<String> fileNames, @RequestParam String product) {
+		return ResponseEntity.ok(this.pageService.delete(fileNames, product));
 	}
 
 	@GetMapping("/preview")
-	public String preview(@RequestParam String pageName) {
-		return this.pageService.preview(pageName);
+	public String preview(@RequestParam String pageName, @RequestParam String product) {
+		return this.pageService.preview(pageName, product);
+	}
+
+	@PutMapping("/publish")
+	public ResponseEntity<Boolean> publish(String pageName, @RequestParam String product) {
+		return ResponseEntity.ok(this.pageService.publish(pageName, product));
 	}
 }

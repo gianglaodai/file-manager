@@ -14,31 +14,27 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
 import com.leo.prj.bean.ShareFileInfo;
 import com.leo.prj.constant.CommonConstant;
-import com.leo.prj.service.img.ImageService;
-import com.leo.prj.service.img.ImageUploadService;
 import com.leo.prj.util.FileFilterUtil;
 import com.leo.prj.util.FilePathUtil;
 
 public abstract class ResourceService {
 	public static final String LANDINGPAGE_EXTENSION = "ldp";
-	private static final String HTML_EXTENSION = "html";
+	public static final String HTML_EXTENSION = "html";
 
 	private static final Logger logger = Logger.getLogger(ResourceService.class);
 
-	@Autowired
-	private ImageService imageService;
-
-	@Autowired
-	private ImageUploadService imageUploadService;
-
 	public List<FileInfo> getAll() {
 		return Stream.of(this.getDirectory().toFile().listFiles(FileFilterUtil.IS_LANDING_PAGE))
+				.map(file -> this.toFileInfo(file)).collect(Collectors.toList());
+	}
+
+	public List<FileInfo> getAll(String product) {
+		return Stream.of(this.getDirectory(product).toFile().listFiles(FileFilterUtil.IS_LANDING_PAGE))
 				.map(file -> this.toFileInfo(file)).collect(Collectors.toList());
 	}
 
@@ -63,12 +59,19 @@ public abstract class ResourceService {
 	}
 
 	private Path createFilePath(String pageName) {
-		return FilePathUtil.from(this.getDirectory()).add(pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION)
-				.getPath();
+		return FilePathUtil.from(this.getDirectory()).add(this.getLandingPageName(pageName)).getPath();
 	}
 
-	private Path createFilePath(String catalog, String pageName) {
-		final FilePathUtil directory = FilePathUtil.from(this.getDirectory()).add(catalog);
+	protected Path createFilePath(String pageName, String product) {
+		return FilePathUtil.from(this.getDirectory(product)).add(this.getLandingPageName(pageName)).getPath();
+	}
+
+	protected String getLandingPageName(String pageName) {
+		return pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION;
+	}
+
+	private Path createFilePath(int catalog, String pageName) {
+		final FilePathUtil directory = FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog));
 		final Path directoryPath = directory.getPath();
 		if (!Files.exists(directoryPath)) {
 			try {
@@ -77,20 +80,33 @@ public abstract class ResourceService {
 				logger.error(e.getMessage(), e);
 			}
 		}
-		return directory.add(pageName + CommonConstant.DOT + LANDINGPAGE_EXTENSION).getPath();
+		return directory.add(this.getLandingPageName(pageName)).getPath();
+	}
+
+	protected String getHTMLName(String pageName) {
+		return pageName + CommonConstant.DOT + HTML_EXTENSION;
 	}
 
 	private Path createHTMLPath(String pageName) {
-		return FilePathUtil.from(this.getDirectory()).add(pageName + CommonConstant.DOT + HTML_EXTENSION).getPath();
+		return FilePathUtil.from(this.getDirectory()).add(this.getHTMLName(pageName)).getPath();
 	}
 
-	private Path createHTMLPath(String catalog, String pageName) {
-		return FilePathUtil.from(this.getDirectory()).add(catalog).add(pageName + CommonConstant.DOT + HTML_EXTENSION)
+	private Path createHTMLPath(String pageName, String product) {
+		return FilePathUtil.from(this.getDirectory(product)).add(this.getHTMLName(pageName)).getPath();
+	}
+
+	private Path createHTMLPath(int catalog, String pageName) {
+		return FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog)).add(this.getHTMLName(pageName))
 				.getPath();
 	}
 
 	public boolean save(EditorPageData data) {
 		return this.save(this.createFilePath(data.getPageName()), this.createHTMLPath(data.getPageName()), data);
+	}
+
+	public boolean save(EditorPageData data, String product) {
+		return this.save(this.createFilePath(data.getPageName(), product),
+				this.createHTMLPath(data.getPageName(), product), data);
 	}
 
 	private boolean save(Path filePath, Path fileHTMLPath, EditorPageData data) {
@@ -105,8 +121,8 @@ public abstract class ResourceService {
 	}
 
 	public boolean saveToCatalog(int catalog, EditorPageData data) {
-		return this.save(this.createFilePath(String.valueOf(catalog), data.getPageName()),
-				this.createHTMLPath(String.valueOf(catalog), data.getPageName()), data);
+		return this.save(this.createFilePath(catalog, data.getPageName()),
+				this.createHTMLPath(catalog, data.getPageName()), data);
 	}
 
 	public abstract Path getDirectoryPath();
@@ -117,9 +133,15 @@ public abstract class ResourceService {
 		return this.load(filePath, fileHtmlPath, fileName);
 	}
 
+	public Optional<EditorPageData> load(String fileName, String product) {
+		final Path filePath = this.createFilePath(fileName, product);
+		final Path fileHtmlPath = this.createHTMLPath(fileName, product);
+		return this.load(filePath, fileHtmlPath, fileName);
+	}
+
 	public Optional<EditorPageData> loadFromCatalog(String fileName, int catalog) {
-		final Path filePath = this.createFilePath(String.valueOf(catalog), fileName);
-		final Path fileHtmlPath = this.createHTMLPath(String.valueOf(catalog), fileName);
+		final Path filePath = this.createFilePath(catalog, fileName);
+		final Path fileHtmlPath = this.createHTMLPath(catalog, fileName);
 		return this.load(filePath, fileHtmlPath, fileName);
 	}
 
@@ -141,8 +163,8 @@ public abstract class ResourceService {
 	}
 
 	public Optional<EditorPageData> loadFromCatalog(int catalog, String fileName) {
-		final Path filePath = this.createFilePath(String.valueOf(catalog), fileName);
-		final Path fileHtmlPath = this.createHTMLPath(String.valueOf(catalog), fileName);
+		final Path filePath = this.createFilePath(catalog, fileName);
+		final Path fileHtmlPath = this.createHTMLPath(catalog, fileName);
 		return this.load(filePath, fileHtmlPath, fileName);
 	}
 
@@ -190,11 +212,32 @@ public abstract class ResourceService {
 	}
 
 	public Path getFilePath(int catalog, String fileName) {
-		return FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog)).add(fileName).getPath();
+		final FilePathUtil directory = FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog));
+		if (!Files.exists(directory.getPath())) {
+			try {
+				Files.createDirectories(directory.getPath());
+			} catch (final IOException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		return directory.add(fileName).getPath();
 	}
 
 	private Path getDirectory() {
 		final Path path = this.getDirectoryPath();
+		if (!Files.exists(path)) {
+			try {
+				Files.createDirectories(path);
+			} catch (final Exception e) {
+				logger.error(e.getMessage(), e);
+				throw new RuntimeException(e);
+			}
+		}
+		return path;
+	}
+
+	protected Path getDirectory(String product) {
+		final Path path = FilePathUtil.from(this.getDirectoryPath()).add(product).getPath();
 		if (!Files.exists(path)) {
 			try {
 				Files.createDirectories(path);
@@ -217,10 +260,31 @@ public abstract class ResourceService {
 		return true;
 	}
 
+	private boolean deleteFile(String fileName, String product) {
+		try {
+			Files.deleteIfExists(this.createFilePath(fileName, product));
+			Files.deleteIfExists(this.createHTMLPath(fileName, product));
+		} catch (final Exception e) {
+			logger.error(e.getMessage(), e);
+			return false;
+		}
+		return true;
+	}
+
 	public int delete(List<String> fileNames) {
 		int deletedFile = 0;
 		for (final String fileName : fileNames) {
 			if (this.deleteFile(fileName)) {
+				deletedFile++;
+			}
+		}
+		return deletedFile;
+	}
+
+	public int delete(List<String> fileNames, String product) {
+		int deletedFile = 0;
+		for (final String fileName : fileNames) {
+			if (this.deleteFile(fileName, product)) {
 				deletedFile++;
 			}
 		}

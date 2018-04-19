@@ -98,13 +98,20 @@ public class ImageService implements FileService {
 		return FilePathUtil.from(this.getUploadDirectory()).add(fileName).getPath();
 	}
 
+	public Path createFileUploadPath(String user, String fileName) {
+		return FilePathUtil.from(this.getUploadDirectory(user)).add(fileName).getPath();
+	}
+
 	public Path createFileDeletePath(String fileName) {
 		return FilePathUtil.from(this.getRecycleDirectory()).add(fileName).getPath();
 	}
 
 	public Path getUploadDirectory() {
 		return FilePathUtil.from(this.userService.getCurrentUserDirectory()).add(IMG_DIRECTORY).getPath();
+	}
 
+	public Path getUploadDirectory(String user) {
+		return FilePathUtil.from(this.userService.getCurrentUserDirectory(user)).add(IMG_DIRECTORY).getPath();
 	}
 
 	public Path getRecycleDirectory() {

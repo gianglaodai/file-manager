@@ -24,14 +24,14 @@ public class ImageResourceService {
 	@Autowired
 	private TemplateService templateService;
 
-	// @Autowired
+	@Autowired
 	private PopupService popupService;
 
 	@Autowired
 	private SectionService sectionService;
 
 	public URI getImageUri(String user, String fileName) {
-		Path imagePath = this.imageService.createFileUploadPath(fileName);
+		Path imagePath = this.imageService.createFileUploadPath(user, fileName);
 		imagePath = Files.exists(imagePath) ? imagePath : this.imageService.createFileDeletePath(fileName);
 		if (Files.exists(imagePath)) {
 			return imagePath.toUri();

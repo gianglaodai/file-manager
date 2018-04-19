@@ -19,6 +19,10 @@ public class UserService {
 	}
 
 	public Path getCurrentUserDirectory() {
-		return FilePathUtil.createUploadUserPath().add(this.getCurrentUser()).getPath();
+		return this.getCurrentUserDirectory(this.getCurrentUser());
+	}
+
+	public Path getCurrentUserDirectory(String user) {
+		return FilePathUtil.createUploadUserPath().add(user).getPath();
 	}
 }

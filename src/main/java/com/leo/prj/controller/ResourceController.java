@@ -44,15 +44,14 @@ public class ResourceController {
 	public ResponseEntity<Resource> getSectionThumbnailResource(@PathVariable int catalog,
 			@PathVariable String fileName) throws Exception {
 		final Resource image = new UrlResource(
-				this.imageResourceService.getTemplateThumbnailResource(fileName, catalog));
+				this.imageResourceService.getSectionThumbnailResource(fileName, catalog));
 		return ResponseEntity.ok(image);
 	}
 
 	@GetMapping(POPUP_THUMBNAIL)
 	public ResponseEntity<Resource> getPopupThumbnailResource(@PathVariable int catalog, @PathVariable String fileName)
 			throws Exception {
-		final Resource image = new UrlResource(
-				this.imageResourceService.getTemplateThumbnailResource(fileName, catalog));
+		final Resource image = new UrlResource(this.imageResourceService.getPopupThumbnailResource(fileName, catalog));
 		return ResponseEntity.ok(image);
 	}
 }
