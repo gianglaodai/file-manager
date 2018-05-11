@@ -30,7 +30,7 @@ public class PageService extends ResourceService {
 
 	@Override
 	public Path getDirectoryPath() {
-		return FilePathUtil.from(this.userService.getCurrentUserDirectory()).add(PAGE_DIRECTORY).getPath();
+		return FilePathUtil.from(userService.getCurrentUserDirectory()).add(PAGE_DIRECTORY).getPath();
 	}
 
 	@Override
@@ -54,26 +54,34 @@ public class PageService extends ResourceService {
 		return CommonConstant.EMPTY;
 	}
 
+	public String preview(String pageName, String product, boolean publish) {
+		final Optional<EditorPageData> file = this.load(pageName, product, publish);
+		if (file.isPresent()) {
+			return file.get().getHtmlContent();
+		}
+		return CommonConstant.EMPTY;
+	}
+
 	public boolean publish(String pageName, String product) {
-		this.movePublishFileToDefault(product);
-		this.moveToPublishFoler(pageName, product);
+		movePublishFileToDefault(product);
+		moveToPublishFoler(pageName, product);
 		return true;
 	}
 
 	private void moveToPublishFoler(String pageName, String product) {
 		try {
-			Files.move(this.createFilePath(this.getLandingPageName(pageName), product).toFile(),
-					this.createPublishFilePath(this.getLandingPageName(pageName), product).toFile());
-			Files.move(this.createFilePath(this.getHTMLName(pageName), product).toFile(),
-					this.createPublishFilePath(this.getHTMLName(pageName), product).toFile());
+			Files.move(createFilePath(getLandingPageName(pageName), product).toFile(),
+					createPublishFilePath(getLandingPageName(pageName), product).toFile());
+			Files.move(createFilePath(getHTMLName(pageName), product).toFile(),
+					createPublishFilePath(getHTMLName(pageName), product).toFile());
 		} catch (final IOException e) {
 			logger.error(e.getMessage(), e);
 		}
 	}
 
 	private void movePublishFileToDefault(String product) {
-		final Path directory = this.getDirectory(product);
-		Stream.of(this.getPublishFolder(product).toFile().listFiles(FileFilterUtil.IS_LANDING_PAGE_RESOURCE))
+		final Path directory = getDirectory(product);
+		Stream.of(getPublishFolder(product).toFile().listFiles(FileFilterUtil.IS_LANDING_PAGE_RESOURCE))
 				.forEach(file -> {
 					try {
 						Files.move(file, FilePathUtil.from(directory).add(file.getName()).getPath().toFile());
@@ -84,10 +92,30 @@ public class PageService extends ResourceService {
 	}
 
 	private Path getPublishFolder(String product) {
-		return FilePathUtil.from(this.getDirectory(product)).add(PUBLISH_DIRECTORY).getPath();
+		return FilePathUtil.from(getDirectory(product)).add(PUBLISH_DIRECTORY).getPath();
 	}
 
 	private Path createPublishFilePath(String pageName, String product) {
-		return FilePathUtil.from(this.getPublishFolder(product)).add(pageName).getPath();
+		return FilePathUtil.from(getPublishFolder(product)).add(pageName).getPath();
+	}
+
+	public boolean rename(String pageName, String newPageName, String product, boolean publish) {
+		try {
+			if (publish) {
+				Files.move(createPublishFilePath(getLandingPageName(pageName), product).toFile(),
+						createPublishFilePath(getLandingPageName(newPageName), product).toFile());
+				Files.move(createPublishFilePath(getHTMLName(pageName), product).toFile(),
+						createPublishFilePath(getHTMLName(newPageName), product).toFile());
+			} else {
+				Files.move(createFilePath(getLandingPageName(pageName), product).toFile(),
+						createFilePath(getLandingPageName(newPageName), product).toFile());
+				Files.move(createFilePath(getHTMLName(pageName), product).toFile(),
+						createFilePath(getHTMLName(newPageName), product).toFile());
+			}
+		} catch (final Exception e) {
+			logger.error(e.getMessage(), e);
+			return false;
+		}
+		return true;
 	}
 }

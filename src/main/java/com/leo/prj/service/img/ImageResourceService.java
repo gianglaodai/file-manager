@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +15,6 @@ import com.leo.prj.util.FilePathUtil;
 
 @Service
 public class ImageResourceService {
-	private static final Logger logger = Logger.getLogger(ImageResourceService.class);
-
 	@Autowired
 	private ImageService imageService;
 
