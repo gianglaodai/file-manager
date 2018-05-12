@@ -1,6 +1,8 @@
 package com.leo.prj.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.leo.prj.bean.EditorPageData;
 import com.leo.prj.bean.FileInfo;
+import com.leo.prj.enumeration.Section;
 import com.leo.prj.service.section.SectionService;
 
 @CrossOrigin
@@ -25,17 +28,18 @@ public class SectionController {
 	private SectionService sectionService;
 
 	@GetMapping("/getAll/{catalog}")
-	public ResponseEntity<List<FileInfo>> getSections(@PathVariable int catalog) {
-		return ResponseEntity.ok(this.sectionService.getAllByCatalog(catalog));
+	public ResponseEntity<List<FileInfo>> getAll(@PathVariable int catalog) {
+		return ResponseEntity.ok(sectionService.getAllByCatalog(catalog,
+				Stream.of(Section.values()).map(s -> s.getValue()).collect(Collectors.toList())));
 	}
 
 	@GetMapping("/load/{catalog}")
 	public ResponseEntity<EditorPageData> load(@PathVariable int catalog, @RequestParam String fileName) {
-		return ResponseEntity.ok(this.sectionService.loadFromCatalog(catalog, fileName).get());
+		return ResponseEntity.ok(sectionService.loadFromCatalog(catalog, fileName).get());
 	}
 
 	@PostMapping("/save/{catalog}")
 	public ResponseEntity<Boolean> save(@PathVariable int catalog, @RequestBody EditorPageData data) {
-		return ResponseEntity.ok(this.sectionService.saveToCatalog(catalog, data));
+		return ResponseEntity.ok(sectionService.saveToCatalog(catalog, data));
 	}
 }

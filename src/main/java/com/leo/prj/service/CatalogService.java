@@ -15,19 +15,19 @@ import com.leo.prj.enumeration.Template;
 @Service
 public class CatalogService {
 	public List<Catalog> getTemplateCatalog() {
-		return this.getCatalogs(Template.values());
+		return getCatalogs(Template.values());
 	}
 
 	public List<Catalog> getSectionCatalog() {
-		return this.getCatalogs(Section.values());
+		return getCatalogs(Section.values());
 	}
 
 	public List<Catalog> getPopupCatalog() {
-		return this.getCatalogs(Popup.values());
+		return getCatalogs(Popup.values());
 	}
 
 	private List<Catalog> getCatalogs(CatalogStructure[] catalogs) {
-		return Stream.of(catalogs).map(catalog -> new Catalog(catalog.getValue(), catalog.getLabel()))
-				.collect(Collectors.toList());
+		return Stream.of(catalogs).sorted((c1, c2) -> c1.getOrder() - c2.getOrder())
+				.map(catalog -> new Catalog(catalog.getValue(), catalog.getLabel())).collect(Collectors.toList());
 	}
 }

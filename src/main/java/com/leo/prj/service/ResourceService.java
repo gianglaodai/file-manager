@@ -46,11 +46,16 @@ public abstract class ResourceService {
 		return pages;
 	}
 
-	public List<FileInfo> getAllByCatalog(int catalog) {
+	public List<FileInfo> getAllByCatalog(int catalog, List<Integer> allFolders) {
 		if (catalog == 0) {
 			final List<FileInfo> files = new ArrayList<>();
-			Stream.of(this.getDirectory().toFile().listFiles(file -> file.isDirectory()))
-					.forEach(file -> files.addAll(getAllByDirectory(file, Integer.valueOf(file.getName()))));
+			Stream.of(this.getDirectory().toFile().listFiles(file -> {
+				try {
+					return file.isDirectory() && allFolders.contains(Integer.valueOf(file.getName()));
+				} catch (final Exception e) {
+					return false;
+				}
+			})).forEach(file -> files.addAll(getAllByDirectory(file, Integer.valueOf(file.getName()))));
 			return files;
 		}
 		return getAllByDirectory(FilePathUtil.from(this.getDirectory()).add(String.valueOf(catalog)).getPath().toFile(),
@@ -58,6 +63,9 @@ public abstract class ResourceService {
 	}
 
 	private List<FileInfo> getAllByDirectory(File directory, int catalog) {
+		if (catalog == 0) {
+			return Collections.emptyList();
+		}
 		if (!directory.exists()) {
 			directory.mkdirs();
 			return Collections.emptyList();

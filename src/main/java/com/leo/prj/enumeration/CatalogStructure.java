@@ -4,4 +4,6 @@ public interface CatalogStructure {
 	public int getValue();
 
 	public String getLabel();
+
+	public int getOrder();
 }
